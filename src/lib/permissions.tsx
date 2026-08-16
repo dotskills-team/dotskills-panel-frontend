@@ -35,6 +35,7 @@ export type PageAccess =
   | "team-salary"
   | "clients-management"
   | "product-management"
+  | "project-management"
   | "purchase-products"
   | "returns"
   | "category-management"
