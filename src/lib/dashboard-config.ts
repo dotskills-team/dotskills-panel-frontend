@@ -89,9 +89,9 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
           href: "/dashboard/admin/clients",
         },
         {
-          id: "product-management",
-          label: "Products",
-          href: "/dashboard/product-management",
+          id: "project-management",
+          label: "Projects",
+          href: "/dashboard/project",
         },
       ],
     },

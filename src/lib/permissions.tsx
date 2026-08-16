@@ -34,6 +34,7 @@ export type PageAccess =
   | "security"
   | "clients-management"
   | "product-management"
+  | "project-management"
   | "purchase-products"
   | "returns"
   | "category-management"

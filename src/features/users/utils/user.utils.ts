@@ -92,3 +92,6 @@ export const canManageUser = (currentUserRole: string, targetUserRole: string): 
 
   return (roleHierarchy[currentUserRole] || 0) > (roleHierarchy[targetUserRole] || 0);
 };
+
+export const getUserFullName = (user?: { firstName: string; lastName: string }) =>
+  user ? `${user.firstName} ${user.lastName}`.trim() : "";
