@@ -1,4 +1,5 @@
 import {
+  PaymentStatus,
   ProjectStatus,
   ProjectType,
 } from "@/types/project.types";
@@ -163,6 +164,42 @@ export const PROJECT_TYPE_CONFIG: Record<
   },
 };
 
+export const PAYMENT_STATUS_CONFIG: Record<
+  PaymentStatus,
+  {
+    label: string;
+    value: PaymentStatus;
+    className: string;
+  }
+> = {
+  DUE: {
+    label: "Due",
+    value: PaymentStatus.DUE,
+    className:
+      "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
+  },
+  PARTIAL: {
+    label: "Partial",
+    value: PaymentStatus.PARTIAL,
+    className:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
+  },
+  ADVANCED: {
+    label: "Advanced",
+    value: PaymentStatus.ADVANCED,
+    className:
+      "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300",
+  },
+  COMPLETE: {
+    label: "Complete",
+    value: PaymentStatus.COMPLETE,
+    className:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
+  },
+};
+
+export const PAYMENT_STATUS_OPTIONS = Object.values(PAYMENT_STATUS_CONFIG);
+
 export const PROJECT_STATUS_OPTIONS = Object.values(
   PROJECT_STATUS_CONFIG,
 );
@@ -193,3 +230,4 @@ export const PROJECT_PAGE_SIZES = [
 ] as const;
 
 export const DEFAULT_PAGE_SIZE = 10;
+
