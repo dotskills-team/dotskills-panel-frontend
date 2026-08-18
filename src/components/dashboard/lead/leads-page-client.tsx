@@ -40,7 +40,7 @@ export function LeadsPageClient() {
   const { assignLead, trashLead, updateLeadStatus } = useLeadMutations();
   const [contactStatusLead, setContactStatusLead] = useState<ILead | null>(null);
   const [contactStatusOpen, setContactStatusOpen] = useState(false);
-
+  console.log("leads ", data);
   const handleUpdateStatus = useCallback(
     (lead: ILead, status?: LeadStatus) => {
       if (!status) return;

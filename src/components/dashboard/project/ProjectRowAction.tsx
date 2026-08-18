@@ -41,7 +41,7 @@ export function ProjectRowActions({
       <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>
         <DropdownMenuItem onClick={() => onOpenDetails(project)}>
           <Eye className="h-4 w-4" />
-          View / Edit
+          View
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onEdit(project)}>
           <Pencil className="h-4 w-4" />

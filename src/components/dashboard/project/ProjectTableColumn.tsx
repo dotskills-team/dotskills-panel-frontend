@@ -93,7 +93,7 @@ cell: ({ row }) => {
     },
     {
       accessorKey: "budget",
-      header: "Budget",
+      header: "Project Value",
       cell: ({ row }) => (
         <span className="text-sm text-muted-foreground">
           {formatCurrency(row.original.budget)}
