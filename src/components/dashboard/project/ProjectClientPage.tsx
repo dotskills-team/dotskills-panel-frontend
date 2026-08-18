@@ -53,11 +53,10 @@ console.log("projects ", data);
   const [editProject, setEditProject] = useState<IProject | null>(null);
   const [formOpen, setFormOpen] = useState(false);
 
-  const handleOpenDetails = useCallback((project: IProject) => {
-    setFormMode("edit");
-    setEditProject(project);
-    setFormOpen(true);
-  }, []);
+const handleOpenDetails = useCallback((project: IProject) => {
+  setDetailsProject(project);
+  setDetailsOpen(true);
+}, []);
 
   const handleEdit = useCallback((project: IProject) => {
     setFormMode("edit");
