@@ -808,7 +808,7 @@ export function ProjectDetailsDialog({
                 <span className="text-xs font-medium uppercase tracking-wide text-indigo-100">
                   {TYPE_LABELS[project.type] ?? project.type}
                 </span>
-                <DialogTitle className="text-xl font-semibold text-white">
+                <DialogTitle className="text-xl font-semibold text-white dark">
                   {project.name}
                 </DialogTitle>
                 <span className="text-sm text-indigo-100">
