@@ -163,20 +163,20 @@ export function getLeadsTableColumns({
     },
     {
       accessorKey: "assignedTo",
-      header: "Assigned To",
+      header: "UpdatedBy",
       cell: ({ row }) => {
-        const assignee = row.original.assignedTo;
-        if (!assignee) {
-          return <span className="text-sm text-muted-foreground">Unassigned</span>;
+        const updatedBy = row.original.updatedBy;
+        if (!updatedBy) {
+          return <span className="text-sm text-muted-foreground">No body updated</span>;
         }
         return (
           <div className="flex items-center gap-2">
-            <Avatar className="h-6 w-6">
+            {/* <Avatar className="h-6 w-6">
               <AvatarFallback className="text-[10px]">
                 {getInitials(assignee.firstName, assignee.lastName)}
               </AvatarFallback>
-            </Avatar>
-            <span className="text-sm">{getLeadFullName(assignee)}</span>
+            </Avatar> */}
+            <span className="text-sm">{updatedBy.firstName}</span>
           </div>
         );
       },

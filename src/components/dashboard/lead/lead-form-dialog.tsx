@@ -43,6 +43,7 @@ import {
 import type { ILead } from "@/types/lead";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { uploadMultipleToCloudinary } from "@/utils/cloudinary";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 interface LeadFormDialogProps {
   mode: "create" | "edit";
@@ -187,26 +188,49 @@ export function LeadFormDialog({
       expectedCloseDate: values.expectedCloseDate || undefined,
     };
 
+    // if (mode === "create") {
+    //   createLead.mutate(payload, {
+    //     onSuccess: () => {
+    //       toast.success("Lead created successfully.");
+    //       onOpenChange(false);
+    //     },
+    //     onError: () => toast.error("Failed to create lead."),
+    //   });
+    // } else if (lead) {
+    //   updateLead.mutate(
+    //     { id: lead._id, payload },
+    //     {
+    //       onSuccess: () => {
+    //         toast.success("Lead updated successfully.");
+    //         onOpenChange(false);
+    //       },
+    //       onError: () => toast.error("Failed to update lead."),
+    //     },
+    //   );
+    // }
+    
     if (mode === "create") {
-      createLead.mutate(payload, {
-        onSuccess: () => {
-          toast.success("Lead created successfully.");
-          onOpenChange(false);
-        },
-        onError: () => toast.error("Failed to create lead."),
-      });
-    } else if (lead) {
-      updateLead.mutate(
-        { id: lead._id, payload },
-        {
-          onSuccess: () => {
-            toast.success("Lead updated successfully.");
-            onOpenChange(false);
-          },
-          onError: () => toast.error("Failed to update lead."),
-        },
-      );
-    }
+  createLead.mutate(payload, {
+    onSuccess: () => {
+      toast.success("Lead created successfully.");
+      onOpenChange(false);
+    },
+    onError: (error) =>
+      toast.error(getErrorMessage(error, "Failed to create lead.")),
+  });
+} else if (lead) {
+  updateLead.mutate(
+    { id: lead._id, payload },
+    {
+      onSuccess: () => {
+        toast.success("Lead updated successfully.");
+        onOpenChange(false);
+      },
+      onError: (error) =>
+        toast.error(getErrorMessage(error, "Failed to update lead.")),
+    },
+  );
+}
   });
 
   return (

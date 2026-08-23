@@ -75,7 +75,7 @@ export function LeadDetailsDrawer({
   });
 
   const lead = data?.data;
-
+  console.log(lead)
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full gap-0 overflow-y-auto p-0 sm:max-w-md">
@@ -192,8 +192,13 @@ export function LeadDetailsDrawer({
                       </span>
                     }
                   />
+                  {
+                    lead?.address ?
+                      <InfoRow label="Address" value={lead.address} />
+                      :
+                      <InfoRow label="Location" value={lead.location || [lead.city, lead.state, lead.country].filter(Boolean).join(", ") || "-"} />
+                  }
                   <InfoRow label="Company" value={lead.company || "-"} />
-                  <InfoRow label="Location" value={lead.location || [lead.city, lead.state, lead.country].filter(Boolean).join(", ") || "-"} />
                   <InfoRow label="Source" value={LEAD_SOURCE_CONFIG[lead.source].label} />
                   <InfoRow
                     label="Status"
@@ -217,8 +222,8 @@ export function LeadDetailsDrawer({
                     }
                   />
                   <InfoRow
-                    label="Assigned To"
-                    value={lead.assignedTo ? getLeadFullName(lead.assignedTo) : "Unassigned"}
+                    label="Last Update By"
+                    value={lead.updatedBy ? lead.updatedBy.firstName : "Nobody updated"}
                   />
                   <InfoRow label="Created At" value={formatDateTime(lead.createdAt)} />
                   <InfoRow label="Last Updated" value={formatDateTime(lead.updatedAt)} />
