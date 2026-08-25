@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -53,7 +54,61 @@ export function LeadsToolbar({
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3">
+      {/* Row 1: date filter + import/export/trash/add lead actions */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2">
+          <Input
+            type="date"
+            className="w-full sm:w-36"
+            value={filters.startDate ?? ""}
+            onChange={(e) =>
+              onUpdateFilters({ startDate: e.target.value || undefined })
+            }
+          />
+          <span className="text-sm text-muted-foreground">to</span>
+          <Input
+            type="date"
+            className="w-full sm:w-36"
+            value={filters.endDate ?? ""}
+            onChange={(e) =>
+              onUpdateFilters({ endDate: e.target.value || undefined })
+            }
+          />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <Button variant="outline" onClick={onImport}>
+            <Upload className="h-4 w-4" />
+            Import
+          </Button>
+          <Button
+            variant="default"
+            size="sm"
+            className="gap-2 hover:cursor-pointer hover:scale-105 transition-transform duration-500 transform ease-in-out hover:bg-rose-800 text-white bg-red-600"
+            asChild
+          >
+            <Link href="/dashboard/leads/trash">
+              <Trash2 className="h-4 w-4" />
+              Trash
+            </Link>
+          </Button>
+          <Button variant="outline" onClick={onExport}>
+            <Download className="h-4 w-4" />
+            Export
+          </Button>
+          <Button
+            onClick={onAddLead}
+            variant={"default"}
+            className="gap-2 duration-500 hover:cursor-pointer hover:scale-105 transition-transform transform ease-in-out hover:bg-cyan-800 text-white bg-indigo-600"
+          >
+            <Plus className="h-4 w-4" />
+            Add Lead
+          </Button>
+        </div>
+      </div>
+
+      {/* Row 2: search + status/contactStatus/source/priority filters */}
       <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative w-full sm:max-w-sm">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -159,51 +214,9 @@ export function LeadsToolbar({
             ))}
           </SelectContent>
         </Select>
-
-        {/* <Button
-          variant="outline"
-          className="w-full sm:w-auto"
-          onClick={() => setMoreFiltersOpen(true)}
-        >
-          <SlidersHorizontal className="h-4 w-4" />
-          More Filters
-          {activeFilterCount > 0 && (
-            <Badge variant="secondary" className="ml-1 px-1.5">
-              {activeFilterCount}
-            </Badge>
-          )}
-        </Button> */}
       </div>
 
-      <div className="flex items-center flex-wrap gap-3">
-        <Button variant="outline" onClick={onImport}>
-          <Upload className="h-4 w-4" />
-          Import
-        </Button>
-        <Button
-          variant="default"
-          size="sm"
-          className="gap-2 hover:cursor-pointer hover:scale-105 transition-transform duration-500 transform ease-in-out hover:bg-rose-800 text-white bg-red-600"
-          asChild
-        >
-          <Link href="/dashboard/leads/trash">
-            <Trash2 className="h-4 w-4" />
-            Trash
-          </Link>
-        </Button>
-        <Button variant="outline" onClick={onExport}>
-          <Download className="h-4 w-4" />
-          Export
-        </Button>
-        <Button
-          onClick={onAddLead}
-          variant={"default"}
-          className="gap-2 duration-500 hover:cursor-pointer hover:scale-105 transition-transform transform ease-in-out hover:bg-cyan-800 text-white bg-indigo-600"
-        >
-          <Plus className="h-4 w-4" />
-          Add Lead
-        </Button>
-      </div>
+
 
       <LeadsMoreFiltersSheet
         open={moreFiltersOpen}

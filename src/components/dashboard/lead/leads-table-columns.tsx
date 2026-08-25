@@ -122,7 +122,7 @@ export function getLeadsTableColumns({
       header: "Contact Status",
       cell: ({ row }) => (
         <Badge variant="outline">
-          {row.original.contactStatus === "NO_RESPONSE" ? "No Response" : row.original.contactStatus === "BUSY" ? "Busy" : row.original.contactStatus === "NEXT_CONTACT" ? "Next Contact" : "—"}
+          {row.original.contactStatus === "NO_RESPONSE" ? "No Response" : row.original.contactStatus === "BUSY" ? "Busy" : row.original.contactStatus === "NEXT_CONTACT" ? "Next Contact" : row.original.contactStatus === "PHONE_OFF" ? "Phone Off" : "—"}
         </Badge>
       ),
     },
