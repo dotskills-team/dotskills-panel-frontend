@@ -251,6 +251,10 @@ export interface LeadFilters {
 
   "createdAt[gte]"?: string;
   "createdAt[lte]"?: string;
+
+  dateType?: "created" | "updatedAt" | "nextContact";
+  startDate?: string; // "YYYY-MM-DD"
+  endDate?: string;   // "YYYY-MM-DD"
 }
 
 export type GetLeadsResponse = ApiResponse<ILead[]>;
