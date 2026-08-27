@@ -1,3 +1,4 @@
+
 // export enum ProjectStatus {
 //   PLANNING = "PLANNING",
 //   IN_PROGRESS = "IN_PROGRESS",
@@ -18,12 +19,34 @@
 //   UI_UX = "UI_UX",
 //   OTHER = "OTHER",
 // }
+
+// export enum PaymentStatus {
+//   DUE = "DUE",
+//   PARTIAL = "PARTIAL",
+//   ADVANCED = "ADVANCED",
+//   COMPLETE = "COMPLETE",
+// }
+
 // export interface PopulatedUser {
 //   _id: string;
 //   firstName: string;
 //   lastName: string;
 //   email: string;
 //   fullName: string;
+// }
+
+// export interface IPayment {
+//   _id?: string;
+//   amount: number;
+//   date: string;
+//   status: PaymentStatus;
+//   note?: string;
+// }
+
+// export interface IProjectDocument {
+//   _id?: string;
+//   requirement: string;
+//   link: string;
 // }
 
 // export interface IProject {
@@ -45,9 +68,15 @@
 
 //   technologies: string[];
 
-//   requirements?: string;
+//   documents?: IProjectDocument[];
 
 //   status: ProjectStatus;
+
+//   paymentStatus?: PaymentStatus;
+//   payments?: IPayment[];
+//   nextPaymentDate?: string;
+
+//   priority?: number;
 
 //   liveUrl?: string;
 //   developmentLiveUrl?: string;
@@ -80,9 +109,15 @@
 
 //   technologies: string[];
 
-//   requirements?: string;
+//   documents?: Omit<IProjectDocument, "_id">[];
 
 //   status?: ProjectStatus;
+
+//   paymentStatus?: PaymentStatus;
+//   payments?: Omit<IPayment, "_id">[];
+//   nextPaymentDate?: string;
+
+//   priority?: number;
 
 //   liveUrl?: string;
 //   developmentLiveUrl?: string;
@@ -105,10 +140,6 @@
 
 //   sort?: string;
 // }
-
-
-
-// v2
 
 export enum ProjectStatus {
   PLANNING = "PLANNING",
@@ -160,6 +191,15 @@ export interface IProjectDocument {
   link: string;
 }
 
+export interface IPaymentInstallment {
+  _id?: string;
+  installmentNo: string;
+  projectionDate: string;
+  paymentPercentage: number;
+  amount: number;
+  isCompleted?: boolean;
+}
+
 export interface IProject {
   _id: string;
 
@@ -185,6 +225,7 @@ export interface IProject {
 
   paymentStatus?: PaymentStatus;
   payments?: IPayment[];
+  paymentSchedule?: IPaymentInstallment[];
   nextPaymentDate?: string;
 
   priority?: number;
@@ -226,6 +267,7 @@ export interface CreateProjectPayload {
 
   paymentStatus?: PaymentStatus;
   payments?: Omit<IPayment, "_id">[];
+  paymentSchedule?: Omit<IPaymentInstallment, "_id">[];
   nextPaymentDate?: string;
 
   priority?: number;
