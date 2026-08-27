@@ -90,6 +90,12 @@ export const projectApi = {
         apiClient.patch<ApiResponse<IProject>>(
             `${BASE_URL}/${id}/restore`,
         ),
+
+    sendInvoice: (id: string, pdfBase64: string) =>
+        apiClient.post<ApiResponse<{ sent: boolean }>>(
+            `${BASE_URL}/${id}/send-invoice`,
+            { pdfBase64 },
+        ),
 };
 
 export default projectApi;

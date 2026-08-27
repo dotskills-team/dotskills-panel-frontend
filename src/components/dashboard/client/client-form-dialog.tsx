@@ -328,7 +328,7 @@ export function ClientFormDialog({
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="client-estimatedValue">
-                  Estimated Value ($)
+                  Estimated Value (৳)
                 </Label>
                 <Input
                   id="client-estimatedValue"
@@ -338,7 +338,7 @@ export function ClientFormDialog({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="client-budget">Budget ($)</Label>
+                <Label htmlFor="client-budget">Budget (৳)</Label>
                 <Input
                   id="client-budget"
                   type="number"
