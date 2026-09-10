@@ -147,6 +147,7 @@ export enum ProjectStatus {
   ON_HOLD = "ON_HOLD",
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED",
+  DONE_DUE = "DONE_DUE",
 }
 
 export enum ProjectType {
@@ -175,6 +176,7 @@ export interface PopulatedUser {
   lastName: string;
   email: string;
   fullName: string;
+  phone?: string;
 }
 
 export interface IPayment {

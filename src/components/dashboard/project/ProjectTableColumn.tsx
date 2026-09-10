@@ -110,6 +110,15 @@ cell: ({ row }) => {
         </span>
       ),
     },
+        {
+      accessorKey: "updatedAt",
+      header: "Delivery Date",
+      cell: ({ row }) => (
+        <span className="text-sm text-muted-foreground">
+          {formatDate(row.original.endDate)}
+        </span>
+      ),
+    },
     {
       accessorKey: "technologies",
       header: "Technologies",
@@ -129,15 +138,7 @@ cell: ({ row }) => {
         );
       },
     },
-    {
-      accessorKey: "updatedAt",
-      header: "Updated At",
-      cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground">
-          {formatDate(row.original.updatedAt)}
-        </span>
-      ),
-    },
+
     {
       id: "actions",
       header: "Actions",

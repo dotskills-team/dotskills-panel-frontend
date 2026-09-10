@@ -51,7 +51,7 @@ export const formatCurrency = (amount?: number) => {
   if (amount === undefined || amount === null) return "—";
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: "BDT",
     maximumFractionDigits: 0,
   }).format(amount);
 };
