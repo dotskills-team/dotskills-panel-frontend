@@ -65,6 +65,13 @@ export const PROJECT_STATUS_CONFIG: Record<
     className:
       "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
   },
+    DONE_DUE: {
+    label: "Done & Due",
+    value: ProjectStatus.DONE_DUE,
+    variant: "warning",
+    className:
+      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
+  },
 };
 
 export const PROJECT_TYPE_CONFIG: Record<

@@ -40,7 +40,7 @@ export const getClientInitials = (
 
 export const formatCurrency = (
   value?: number | null,
-  currency = "USD",
+  currency = "BDT",
 ): string => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
