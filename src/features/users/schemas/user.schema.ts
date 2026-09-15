@@ -218,7 +218,8 @@ export const updateUserSchema = z
 
     address: z.string().trim().optional(),
 
-    avatar: z.string().optional(),
+    // avatar: z.string().optional(),
+    avatar: z.string().nullish(),
 
     bio: z.string().optional(),
 

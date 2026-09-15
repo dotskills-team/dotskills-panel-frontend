@@ -98,7 +98,11 @@ export function UsersPageClient() {
   const handleUpdateUser = useCallback(
     async (data: UpdateUserInput) => {
       if (selectedUser) {
-        await updateUserMutation.mutateAsync(data);
+        // await updateUserMutation.mutateAsync(data);
+        await updateUserMutation.mutateAsync({
+        ...data,
+        avatar: data.avatar ?? undefined,
+      });
       }
     },
     [selectedUser, updateUserMutation],
