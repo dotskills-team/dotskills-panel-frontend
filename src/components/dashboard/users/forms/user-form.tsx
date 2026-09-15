@@ -415,6 +415,8 @@ export function UserForm({ user, isLoading, onSubmit }: UserFormProps) {
 
   async function handleFormSubmit(data: FormValues) {
     setSubmitError(null);
+
+    console.log("Form submitted with data:", data);
     try {
       await onSubmit(sanitizePayload(data));
     } catch (error) {
@@ -426,9 +428,19 @@ export function UserForm({ user, isLoading, onSubmit }: UserFormProps) {
     }
   }
 
-  function onInvalid() {
-    toast.error("Please fix the highlighted fields before submitting.");
-  }
+  // function onInvalid() {
+  //   toast.error("Please fix the highlighted fields before submitting.");
+  // }
+
+function onInvalid(errors: any) {
+  console.log("VALIDATION ERRORS:", errors);
+
+  const firstError = Object.values(errors)[0] as any;
+
+  toast.error(
+    firstError?.message || "Please fix the highlighted fields before submitting.",
+  );
+}
 
   return (
     <form
