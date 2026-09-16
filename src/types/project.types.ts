@@ -148,6 +148,7 @@ export enum ProjectStatus {
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED",
   DONE_DUE = "DONE_DUE",
+  DELIVERED = "DELIVERED",
 }
 
 export enum ProjectType {
