@@ -1,29 +1,4 @@
-// export const buildProjectQuery = (
-//   filters: Record<string, unknown>,
-// ) => {
-//   const params = new URLSearchParams();
 
-//   Object.entries(filters).forEach(
-//     ([key, value]) => {
-//       if (
-//         value !== undefined &&
-//         value !== null &&
-//         value !== ""
-//       ) {
-//         params.append(
-//           key,
-//           String(value),
-//         );
-//       }
-//     },
-//   );
-
-//   return Object.fromEntries(
-//     params.entries(),
-//   );
-// };
-
-// src/features/projects/utils/user.utils.ts
 export const buildProjectQuery = (
   filters: Record<string, unknown>,
 ): Record<string, unknown> => {

@@ -100,6 +100,27 @@ cell: ({ row }) => {
         </span>
       ),
     },
+{
+  id: "dueAmount",
+  header: "Due Amount",
+  cell: ({ row }) => {
+    const project = row.original;
+    const totalPaid = (project.payments ?? []).reduce(
+      (sum, p) => sum + (p.amount || 0),
+      0,
+    );
+    const amountDue =
+      project.budget !== undefined && project.budget !== null
+        ? Math.max(project.budget - totalPaid, 0)
+        : undefined;
+
+    return (
+      <span className="text-sm font-medium text-red-600 dark:text-red-400">
+        {amountDue !== undefined ? formatCurrency(amountDue) : "—"}
+      </span>
+    );
+  },
+},
     {
       accessorKey: "startDate",
       id: "startDate",
@@ -119,25 +140,25 @@ cell: ({ row }) => {
         </span>
       ),
     },
-    {
-      accessorKey: "technologies",
-      header: "Technologies",
-      cell: ({ row }) => {
-        const technologies = row.original.technologies ?? [];
-        return (
-          <div className="flex max-w-50 flex-wrap gap-1">
-            {technologies.slice(0, 3).map((tech) => (
-              <Badge key={tech} variant="outline">
-                {tech}
-              </Badge>
-            ))}
-            {technologies.length > 3 && (
-              <Badge variant="outline">+{technologies.length - 3}</Badge>
-            )}
-          </div>
-        );
-      },
-    },
+    // {
+    //   accessorKey: "technologies",
+    //   header: "Technologies",
+    //   cell: ({ row }) => {
+    //     const technologies = row.original.technologies ?? [];
+    //     return (
+    //       <div className="flex max-w-50 flex-wrap gap-1">
+    //         {technologies.slice(0, 3).map((tech) => (
+    //           <Badge key={tech} variant="outline">
+    //             {tech}
+    //           </Badge>
+    //         ))}
+    //         {technologies.length > 3 && (
+    //           <Badge variant="outline">+{technologies.length - 3}</Badge>
+    //         )}
+    //       </div>
+    //     );
+    //   },
+    // },
 
     {
       id: "actions",

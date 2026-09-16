@@ -128,8 +128,6 @@ export function ProjectDetailsDialog({
       ? Math.max(project.budget - totalPaid, 0)
       : undefined;
 
-
-      console.log("ProjectDetailsDialog - project:", project);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl overflow-hidden bg-gray-100 p-0 dark:bg-slate-950">
