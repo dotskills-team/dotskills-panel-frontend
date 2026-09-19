@@ -19,6 +19,11 @@ export enum LeadPriority {
   URGENT = "URGENT",
 }
 
+export enum LeadType {
+  WEBSITE = "WEBSITE",
+  SOFTWARE = "SOFTWARE"
+}
+
 export enum LeadSource {
   WEBSITE = "WEBSITE",
   FACEBOOK = "FACEBOOK",
@@ -89,6 +94,8 @@ export interface ILead {
 
   phone: string;
   alternatePhone?: string;
+
+  leadType?: LeadType;
 
   company?: string;
   website?: string;
@@ -161,6 +168,7 @@ export interface CreateLeadPayload {
   phone: string;
   alternatePhone?: string;
 
+  leadType?: LeadType;
   company?: string;
   website?: string;
   industry?: string;
@@ -243,6 +251,7 @@ export interface LeadFilters {
   source?: LeadSource;
   status?: LeadStatus;
   priority?: LeadPriority;
+  leadType?: LeadType;
   contactStatus?: LeadContactStatus;
 
   assignedTo?: string;

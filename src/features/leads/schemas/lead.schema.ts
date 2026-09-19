@@ -6,6 +6,7 @@ import {
   LeadPriority,
   LeadSource,
   LeadStatus,
+  LeadType,
   PreferredContactMethod,
 } from "@/types/lead";
 
@@ -66,7 +67,7 @@ export const createLeadFormSchema = z.object({
   city: z.string().trim().max(100).optional().or(z.literal("")),
   zipCode: z.string().trim().max(20).optional().or(z.literal("")),
   address: z.string().trim().max(200).optional().or(z.literal("")),
-
+  leadType: z.nativeEnum(LeadType).optional(),
   source: z.enum(sourceValues, {
     message: "Please choose a lead source.",
   }),

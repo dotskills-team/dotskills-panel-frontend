@@ -24,6 +24,7 @@ import {
   LEAD_PRIORITY_OPTIONS,
   LEAD_SOURCE_OPTIONS,
   LEAD_STATUS_OPTIONS,
+  LEAD_TYPE_OPTIONS,
 } from "@/features/leads/constants/lead.constant";
 import type { LeadFilters } from "@/types/lead";
 import { LeadsMoreFiltersSheet } from "./leads-more-filters-sheet";
@@ -138,6 +139,28 @@ export function LeadsToolbar({
           <SelectContent>
             <SelectItem value={ALL}>All Statuses</SelectItem>
             {LEAD_STATUS_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={filters.leadType ?? ALL}
+          onValueChange={(value) =>
+            onUpdateFilters({
+              leadType:
+                value === ALL ? undefined : (value as LeadFilters["leadType"]),
+            })
+          }
+        >
+          <SelectTrigger className="w-full sm:w-35">
+            <SelectValue placeholder="Type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL}>All Types</SelectItem>
+            {LEAD_TYPE_OPTIONS.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
