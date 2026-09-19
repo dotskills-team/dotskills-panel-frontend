@@ -10,6 +10,7 @@ import {
   LEAD_PRIORITY_CONFIG,
   LEAD_SOURCE_CONFIG,
   LEAD_STATUS_CONFIG,
+  LEAD_TYPE_CONFIG,
 } from "@/features/leads/constants/lead.constant";
 import { formatDate, getInitials, getLeadFullName } from "@/features/leads/utils/lead.utils";
 import { LeadRowActions } from "./lead-row-actions";
@@ -137,12 +138,12 @@ export function getLeadsTableColumns({
       cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.location || [row.original.city, row.original.state].filter(Boolean).join(", ") || "—"}</span>,
     },
     {
-      accessorKey: "priority",
-      header: "Priority",
+      accessorKey: "leadType",
+      header: "Type",
       cell: ({ row }) => {
-        const config = LEAD_PRIORITY_CONFIG[row.original.priority];
+        const config = LEAD_TYPE_CONFIG[row?.original?.leadType || "WEBSITE"];
         return (
-          <Badge variant="outline" className={config.className}>
+          <Badge variant="outline" className={config.label === "Website" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300" : config.label === "Software" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300" : ""}>
             {config.label}
           </Badge>
         );

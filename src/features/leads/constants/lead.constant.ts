@@ -4,6 +4,7 @@ import {
   LeadPriority,
   LeadSource,
   LeadStatus,
+  LeadType,
   PreferredContactMethod,
 } from "@/types/lead";
 
@@ -35,9 +36,23 @@ export interface PriorityConfig {
   className: string;
 }
 
+export interface TypeConfig {
+  label: string;
+  value: LeadPriority;
+  variant: BadgeVariant;
+  className: string;
+}
+
+
+
 export interface SourceConfig {
   label: string;
   value: LeadSource;
+}
+
+export interface LeadTypeConfig {
+  label: string;
+  value: LeadType;
 }
 
 export interface ContactMethodConfig {
@@ -145,6 +160,17 @@ export const LEAD_CONTACT_STATUS_OPTIONS = [
   },
 ] as const;
 
+export const LEAD_TYPE_OPTIONS = [
+  {
+    value: LeadType.WEBSITE,
+    label: "Website",
+  },
+  {
+    value: LeadType.SOFTWARE,
+    label: "Software",
+  },
+] as const;
+
 export const LEAD_PRIORITY_CONFIG: Record<
   LeadPriority,
   PriorityConfig
@@ -181,6 +207,21 @@ export const LEAD_PRIORITY_CONFIG: Record<
       "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
   },
 };
+
+export const LEAD_TYPE_CONFIG: Record<
+  LeadType,
+  LeadTypeConfig
+> = {
+  WEBSITE: {
+    label: "Website",
+    value: LeadType.WEBSITE,
+  },
+  SOFTWARE: {
+    label: "Software",
+    value: LeadType.SOFTWARE,
+  },
+};
+
 
 export const LEAD_SOURCE_CONFIG: Record<
   LeadSource,

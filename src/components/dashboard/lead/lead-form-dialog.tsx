@@ -40,7 +40,7 @@ import {
   createLeadFormSchema,
   type CreateLeadFormValues,
 } from "@/features/leads/schemas/lead.schema";
-import type { ILead } from "@/types/lead";
+import { LeadType, type ILead } from "@/types/lead";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { uploadMultipleToCloudinary } from "@/utils/cloudinary";
 import { getErrorMessage } from "@/utils/getErrorMessage";
@@ -82,6 +82,7 @@ const EMPTY_VALUES: LeadFormDialogValues = {
   requirementTitle: "",
   requirementDescription: "",
   budget: undefined,
+  leadType: LeadType.WEBSITE,
   timeline: "",
   attachments: [],
 };
@@ -92,6 +93,7 @@ const leadToFormValues = (lead: ILead): LeadFormDialogValues => ({
   email: lead.email ?? "",
   phone: lead.phone,
   alternatePhone: lead.alternatePhone ?? "",
+  leadType: lead.leadType ?? LeadType.WEBSITE,
   company: lead.company ?? "",
   website: lead.website ?? "",
   industry: lead.industry ?? "",
@@ -171,14 +173,6 @@ export function LeadFormDialog({
     }
   };
 
-  // const handleRemoveAttachment = (url: string) => {
-  //   form.setValue(
-  //     "attachments",
-  //     attachments.filter((item) => item !== url),
-  //     { shouldDirty: true },
-  //   );
-  // };
-
   const onSubmit = form.handleSubmit((values) => {
     const payload = {
       ...values,
@@ -187,27 +181,6 @@ export function LeadFormDialog({
       assignedTo: values.assignedTo || undefined,
       expectedCloseDate: values.expectedCloseDate || undefined,
     };
-
-    // if (mode === "create") {
-    //   createLead.mutate(payload, {
-    //     onSuccess: () => {
-    //       toast.success("Lead created successfully.");
-    //       onOpenChange(false);
-    //     },
-    //     onError: () => toast.error("Failed to create lead."),
-    //   });
-    // } else if (lead) {
-    //   updateLead.mutate(
-    //     { id: lead._id, payload },
-    //     {
-    //       onSuccess: () => {
-    //         toast.success("Lead updated successfully.");
-    //         onOpenChange(false);
-    //       },
-    //       onError: () => toast.error("Failed to update lead."),
-    //     },
-    //   );
-    // }
     
     if (mode === "create") {
   createLead.mutate(payload, {
@@ -331,6 +304,32 @@ export function LeadFormDialog({
                   readOnly
                 />
               </Field>
+
+              <Field label="Lead Type">
+  <Select
+    value={form.watch("leadType")}
+    onValueChange={(value) =>
+      form.setValue(
+        "leadType",
+        value as CreateLeadFormValues["leadType"],
+        {
+          shouldDirty: true,
+          shouldValidate: true,
+        },
+      )
+    }
+  >
+    <SelectTrigger>
+      <SelectValue placeholder="Select lead type" />
+    </SelectTrigger>
+
+    <SelectContent>
+      <SelectItem value="WEBSITE">Website</SelectItem>
+      <SelectItem value="SOFTWARE">Software</SelectItem>
+    </SelectContent>
+  </Select>
+</Field>
+
               <Field
                 label="Source"
                 error={form.formState.errors.source?.message}
