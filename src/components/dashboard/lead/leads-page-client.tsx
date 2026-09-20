@@ -180,8 +180,7 @@ export function LeadsPageClient() {
         <LeadsHeader />
       </div>
 
-      <LeadsStats />
-
+  <LeadsStats stats={data?.stats as any} isLoading={isLoading} />
       <div className="flex flex-col gap-4">
         <LeadsToolbar
           filters={filters}

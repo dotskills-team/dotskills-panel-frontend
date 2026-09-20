@@ -2,4 +2,3 @@
 export * from "./useProjects";
 export * from "./useProjectMutation";
 export * from "./project.filter";
-export * from "./useProjectStats";

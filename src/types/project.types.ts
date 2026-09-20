@@ -7,6 +7,8 @@
 //   CANCELLED = "CANCELLED",
 // }
 
+import { ApiResponse } from "./api.types";
+
 // export enum ProjectType {
 //   WORDPRESS = "WORDPRESS",
 //   MERN = "MERN",
@@ -171,6 +173,15 @@ export enum PaymentStatus {
   COMPLETE = "COMPLETE",
 }
 
+export interface ProjectStatsData {
+  total: number;
+  Planning: number;
+  InProgress: number;
+  OnHold: number;
+  Completed: number;
+}
+
+
 export interface PopulatedUser {
   _id: string;
   firstName: string;
@@ -246,6 +257,9 @@ export interface IProject {
   updatedAt?: string;
 }
 
+export type ProjectsResponse = ApiResponse<IProject[], ProjectStatsData>;
+
+
 // Payload stays as IDs — this is what you send to the API
 export interface CreateProjectPayload {
   name: string;
@@ -295,4 +309,6 @@ export interface ProjectFilters {
   projectManager?: string;
 
   sort?: string;
+  startDate?: string;
+  endDate?: string;
 }

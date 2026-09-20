@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ProjectsPage() {
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-4">
       <ProjectsPageClient />
     </div>
   );

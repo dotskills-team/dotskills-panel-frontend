@@ -33,7 +33,7 @@ export function ProjectsPageClient() {
 
   const { data, isLoading, isError, error, refetch } = useProjects(queryFilters);
   const { trashProject } = useProjectMutations();
-console.log("projects ", data);
+console.log("projects ", data?.stats);
   const projects = data?.data ?? [];
   const meta = data?.meta;
 
@@ -102,12 +102,12 @@ const handleOpenDetails = useCallback((project: IProject) => {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <ProjectsHeader />
       </div>
 
-      <ProjectsStats />
+      <ProjectsStats projectStat={data?.stats} isLoading={isLoading} />
 
       <div className="flex flex-col gap-4">
         <ProjectsToolbar

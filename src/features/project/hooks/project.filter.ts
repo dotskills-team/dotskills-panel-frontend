@@ -8,7 +8,7 @@ import { buildProjectQuery } from "../utils/project.utils";
 const INITIAL_FILTERS: ProjectFilters = {
   page: 1,
   limit: DEFAULT_PAGE_SIZE,
-  sort: "-createdAt",
+  sort: "-startDate",
   searchTerm: "",
 };
 

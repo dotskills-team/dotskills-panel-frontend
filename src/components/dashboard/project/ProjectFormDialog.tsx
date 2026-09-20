@@ -195,10 +195,12 @@ export function ProjectFormDialog({ mode, project, open, onOpenChange }: Project
     const watchedPaymentSchedule = form.watch("paymentSchedule");
 
     const { totalPaid, amountDue } = useMemo(() => {
-        const paid = (watchedPayments ?? []).reduce((sum, p) => {
-            const amount = Number(p?.amount);
-            return sum + (Number.isFinite(amount) ? amount : 0);
-        }, 0);
+        const paid = (watchedPayments ?? [])
+            .filter((p) => p?.status === PaymentStatus.COMPLETE)
+            .reduce((sum, p) => {
+                const amount = Number(p?.amount);
+                return sum + (Number.isFinite(amount) ? amount : 0);
+            }, 0);
         const budget = Number(watchedBudget);
         const due = Number.isFinite(budget) ? Math.max(budget - paid, 0) : undefined;
 
@@ -277,21 +279,21 @@ export function ProjectFormDialog({ mode, project, open, onOpenChange }: Project
                 },
                 onError: () => toast.error("Failed to create project."),
             });
-       } else if (project) {
-    updateProject.mutate(
-        { id: project._id, payload },
-        {
-            onSuccess: (data) => {
-                toast.success("Project updated successfully.");
-                onOpenChange(false);
-                void sendInvoiceEmail(
-                    extractSavedProject(data, buildFallbackProjectForInvoice(project, values)),
-                );
-            },
-            onError: () => toast.error("Failed to update project."),
-        },
-    );
-}
+        } else if (project) {
+            updateProject.mutate(
+                { id: project._id, payload },
+                {
+                    onSuccess: (data) => {
+                        toast.success("Project updated successfully.");
+                        onOpenChange(false);
+                        void sendInvoiceEmail(
+                            extractSavedProject(data, buildFallbackProjectForInvoice(project, values)),
+                        );
+                    },
+                    onError: () => toast.error("Failed to update project."),
+                },
+            );
+        }
     });
 
     return (
