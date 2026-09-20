@@ -5,11 +5,12 @@ export interface PaginationMeta {
   totalPage: number;
 }
 
-export interface ApiResponse<T> {
+export interface ApiResponse<T, S = Record<string, any>> {
   success: boolean;
   message: string;
   data: T;
   meta?: PaginationMeta;
+  stats?: S;
 }
 
 export interface ApiErrorSource {

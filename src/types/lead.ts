@@ -1,3 +1,4 @@
+import { LeadStatsData } from "@/components/dashboard/lead/leads-stats";
 import type { ApiResponse } from "@/types";
 
 export enum LeadStatus {
@@ -266,7 +267,7 @@ export interface LeadFilters {
   endDate?: string;   // "YYYY-MM-DD"
 }
 
-export type GetLeadsResponse = ApiResponse<ILead[]>;
+export type GetLeadsResponse = ApiResponse<ILead[], LeadStatsData>;
 
 export type GetLeadResponse = ApiResponse<ILead>;
 

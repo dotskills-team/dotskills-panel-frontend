@@ -55,7 +55,7 @@ export function getProjectsTableColumns({
       accessorKey: "name",
       id: "name",
       header: "Project",
-cell: ({ row }) => {
+      cell: ({ row }) => {
         const project = row.original;
         return (
           <button
@@ -100,27 +100,26 @@ cell: ({ row }) => {
         </span>
       ),
     },
-{
-  id: "dueAmount",
-  header: "Due Amount",
-  cell: ({ row }) => {
-    const project = row.original;
-    const totalPaid = (project.payments ?? []).reduce(
-      (sum, p) => sum + (p.amount || 0),
-      0,
-    );
-    const amountDue =
-      project.budget !== undefined && project.budget !== null
-        ? Math.max(project.budget - totalPaid, 0)
-        : undefined;
+    {
+      id: "dueAmount",
+      header: "Due Amount",
+      cell: ({ row }) => {
+        const project = row.original;
+        const totalPaid = (project.payments ?? [])
+          .filter((p) => p.status === "COMPLETE")
+          .reduce((sum, p) => sum + (p.amount || 0), 0);
+        const amountDue =
+          project.budget !== undefined && project.budget !== null
+            ? Math.max(project.budget - totalPaid, 0)
+            : undefined;
 
-    return (
-      <span className="text-sm font-medium text-red-600 dark:text-red-400">
-        {amountDue !== undefined ? formatCurrency(amountDue) : "—"}
-      </span>
-    );
-  },
-},
+        return (
+          <span className="text-sm font-medium text-red-600 dark:text-red-400">
+            {amountDue !== undefined ? formatCurrency(amountDue) : "—"}
+          </span>
+        );
+      },
+    },
     {
       accessorKey: "startDate",
       id: "startDate",
@@ -131,7 +130,7 @@ cell: ({ row }) => {
         </span>
       ),
     },
-        {
+    {
       accessorKey: "updatedAt",
       header: "Delivery Date",
       cell: ({ row }) => (

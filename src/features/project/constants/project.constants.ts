@@ -232,7 +232,7 @@ export const DEFAULT_PROJECT_FILTERS = {
   client: undefined,
   projectManager: undefined,
 
-  sort: "-createdAt",
+  sort: "-startDate",
 };
 
 export const PROJECT_PAGE_SIZES = [

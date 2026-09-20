@@ -122,7 +122,9 @@ export function ProjectDetailsDialog({
 
   const statusConfig = PROJECT_STATUS_CONFIG[project.status];
   const paymentStatus = project.paymentStatus;
-  const totalPaid = (project.payments ?? []).reduce((sum, p) => sum + (p.amount || 0), 0);
+  const totalPaid = (project.payments ?? [])
+  .filter((p) => p.status === "COMPLETE")
+  .reduce((sum, p) => sum + (p.amount || 0), 0);
   const amountDue =
     project.budget !== undefined && project.budget !== null
       ? Math.max(project.budget - totalPaid, 0)
