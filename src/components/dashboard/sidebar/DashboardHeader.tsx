@@ -8,6 +8,7 @@ import { HeaderNotifications } from "./HeaderNotifications";
 import { HeaderSearch } from "./HeaderSearch";
 import { UserMenu } from "./UserMenu";
 import ThemeToggle from "../header/ThemeToggle";
+import { CalculatorModal } from "@/components/calculator/calculator-modal";
 
 export function DashboardHeader() {
   return (
@@ -25,6 +26,8 @@ export function DashboardHeader() {
         </div>
 
         <div className="flex items-center gap-1.5">
+                     <CalculatorModal />
+
           <HeaderSearch />
           <HeaderNotifications />
           <ThemeToggle />

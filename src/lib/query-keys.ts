@@ -50,4 +50,25 @@ export const queryKeys = {
     details: (id: string) =>
       ["projects", id] as const,
   },
+
+
+
+
+  financialAccounts: {
+  all: ["financial-accounts"] as const,
+  list: (params?: unknown) => ["financial-accounts", "list", params] as const,
+  details: (id: string) => ["financial-accounts", id] as const,
+},
+
+expenseCategories: {
+  all: ["expense-categories"] as const,
+  list: (params?: unknown) => ["expense-categories", "list", params] as const,
+  details: (id: string) => ["expense-categories", id] as const,
+},
+
+expenses: {
+  all: ["expenses"] as const,
+  list: (params?: unknown) => ["expenses", "list", params] as const,
+  details: (id: string) => ["expenses", id] as const,
+},
 };

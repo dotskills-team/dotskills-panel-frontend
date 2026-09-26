@@ -1,7 +1,3 @@
-/**
- * Dashboard configuration - defines navigation structure, colors, and layout
- */
-
 import { UserRole, PageAccess } from "./permissions";
 
 export interface NavGroup {
@@ -73,6 +69,29 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
         },
       ],
     },
+
+    {
+      label: "Overview",
+    collapsible: true,
+
+      items: [
+        {
+          id: "expenseCategory",
+          label: "expense-category",
+          href: "/dashboard/expense-category",
+        },
+        {
+          id: "expense",
+          label: "expenses",
+          href: "/dashboard/expenses",
+        },
+        {
+          id: "financial",
+          label: "financial-account",
+          href: "/dashboard/financial-account",
+        },
+      ],
+    },
     {
       label: "Management",
       collapsible: true,
@@ -134,6 +153,13 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
       ],
     },
   ],
+
+
+
+
+
+
+
   ADMIN: [
     {
       label: "Overview",

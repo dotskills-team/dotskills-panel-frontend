@@ -51,7 +51,10 @@ export type PageAccess =
   | "leads"
   | "my-orders"
   | "pos"
-  | "courier-settings";
+  | "courier-settings"
+  | "financial"
+  | "expense"
+  | "expenseCategory";
 
 export interface Page {
   id: PageAccess;
