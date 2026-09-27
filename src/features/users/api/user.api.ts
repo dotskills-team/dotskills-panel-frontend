@@ -5,7 +5,7 @@ import type { User } from "@/types/user.types";
 export interface GetUsersParams {
   page?: number;
   limit?: number;
-  search?: string;
+  searchTerm?: string;
   role?: string;
   status?: string;
   department?: string;

@@ -51,14 +51,14 @@ export function SalaryFormDialog({
   existing,
 }: SalaryFormDialogProps) {
   const isEdit = Boolean(existing);
-  const [search, setSearch] = useState("");
+  const [searchTerm, setSearch] = useState("");
   const [userId, setUserId] = useState("");
   const [month, setMonth] = useState(initialMonth);
   const [year, setYear] = useState(initialYear);
   const [note, setNote] = useState("");
   const createMutation = useCreateTeamSalary();
   const usersQuery = useUsers(
-    { page: 1, limit: 20, search, status: "ACTIVE" },
+    { page: 1, limit: 20, searchTerm, status: "ACTIVE" },
     { enabled: open && !isEdit },
   );
   const selectedUser = useMemo(
@@ -139,7 +139,7 @@ export function SalaryFormDialog({
                 <Input
                   id="salary-staff-search"
                   className="pl-9"
-                  value={search}
+                  value={searchTerm}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search active staff by name or email"
                 />

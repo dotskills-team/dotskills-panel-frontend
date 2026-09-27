@@ -556,7 +556,7 @@ function onInvalid(errors: any) {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter password"
+                  placeholder="Enter minimum 8 characters"
                   className={cn(inputClassName, "pr-10")}
                   aria-invalid={Boolean(
                     (errors as Record<string, { message?: string }>).password,

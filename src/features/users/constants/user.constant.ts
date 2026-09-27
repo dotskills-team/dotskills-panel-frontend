@@ -89,6 +89,7 @@ export const USER_DESIGNATIONS = [
   "CEO",
   "Designer",
   "Product Manager",
+  "Sales Executive"
 ];
 
 export const ROLES_WITH_PERMISSIONS = [

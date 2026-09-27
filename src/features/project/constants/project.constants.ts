@@ -79,6 +79,13 @@ export const PROJECT_STATUS_CONFIG: Record<
     className:
       "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
   },
+  PENDING: {
+    label: "Pending",
+    value: ProjectStatus.PENDING,
+    variant: "warning",
+    className:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
+  },
 };
 
 export const PROJECT_TYPE_CONFIG: Record<
@@ -168,7 +175,35 @@ export const PROJECT_TYPE_CONFIG: Record<
     className:
       "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300",
   },
+  VIDEO_EDITING: {
+    label: "Video Editing",
+    value: ProjectType.VIDEO_EDITING,
+    variant: "secondary",
+    className:
+      "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300",
+  },
 
+  SEO: {
+    label: "SEO",
+    value: ProjectType.SEO,
+    variant: "secondary",
+    className:
+      "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300",
+  },
+  IMAGE_DESIGN: {
+    label: "Image Design",
+    value: ProjectType.IMAGE_DESIGN,
+    variant: "secondary",
+    className:
+      "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300",
+  },
+  DIGITAL_MARKETING: {
+    label: "Digital Marketing",
+    value: ProjectType.DIGITAL_MARKETING,
+    variant: "secondary",
+    className:
+      "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300",
+  },
   OTHER: {
     label: "Other",
     value: ProjectType.OTHER,

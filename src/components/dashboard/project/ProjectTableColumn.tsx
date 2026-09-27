@@ -114,7 +114,7 @@ export function getProjectsTableColumns({
             : undefined;
 
         return (
-          <span className="text-sm font-medium text-red-600 dark:text-red-400">
+          <span className={`text-sm font-medium ${amountDue === 0 ? "text-green-500":" text-red-600 dark:text-red-400"} `}>
             {amountDue !== undefined ? formatCurrency(amountDue) : "—"}
           </span>
         );
