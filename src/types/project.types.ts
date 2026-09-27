@@ -197,6 +197,8 @@ export interface IPayment {
   date: string;
   status: PaymentStatus;
   note?: string;
+  financialAccountId?: string; 
+
 }
 
 export interface IProjectDocument {

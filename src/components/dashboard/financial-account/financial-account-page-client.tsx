@@ -110,7 +110,7 @@ export function FinancialAccountPageClient() {
   const summary = useFinancialAccountSummary();
   const stats = summary.data?.data;
 
-
+// console.log(rows,"------------------")
 
   const totalBalance = rows.reduce((sum, row) => sum + row.openingBalance, 0);
   const activeCount = rows.filter((row) => row.status === "ACTIVE").length;
@@ -311,6 +311,7 @@ export function FinancialAccountPageClient() {
                     <th className="p-3 font-medium">Type</th>
                     <th className="p-3 font-medium">Number</th>
                     <th className="p-3 font-medium">Opening Balance</th>
+                    <th className="p-3 font-medium">current Balance</th>
                     <th className="p-3 font-medium">Status</th>
                     <th className="p-3 text-right font-medium">Actions</th>
                   </tr>
@@ -336,6 +337,7 @@ export function FinancialAccountPageClient() {
                         {account.accountNumber || "—"}
                       </td>
                       <td className="p-3 font-medium">{money(account.openingBalance)}</td>
+                      <td className="p-3 font-medium">{money(account.currentBalance)}</td>
                       <td className="p-3">
                         <Badge
                           variant="outline"

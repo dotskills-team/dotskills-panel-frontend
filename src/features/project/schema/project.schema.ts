@@ -71,6 +71,7 @@ const paymentSchema = z.object({
   date: z.string().min(1, "Payment date is required"),
   status: z.nativeEnum(PaymentStatus),
   note: z.string().optional(),
+  financialAccountId: z.string().optional(),
 });
 
 const paymentInstallmentSchema = z.object({
