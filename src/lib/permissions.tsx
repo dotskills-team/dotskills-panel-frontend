@@ -216,6 +216,21 @@ export const availablePages: Page[] = [
     label: "Courier Settings",
     icon: <Settings className="h-4 w-4" />,
   },
+  {
+    id: "financial",
+    label: "Financial",
+    icon: <FileText className="h-4 w-4" />,
+  },
+  {
+    id: "expense",
+    label: "Expense",
+    icon: <FileText className="h-4 w-4" />,
+  },
+  {
+    id: "expenseCategory",
+    label: "Expense Category",
+    icon: <Settings className="h-4 w-4" />,
+  },
 ];
 
 export const defaultRolePermissions: Record<UserRole, PageAccess[]> = {
