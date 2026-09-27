@@ -139,6 +139,16 @@ export function HeaderFollowUpCalendar() {
             Next Contact
           </span>
         </div>
+        {/* <div className="flex items-center gap-4 border-b bg-muted/30 px-4 py-2 text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            Confirmed Meeting
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-amber-500" />
+            Next Contact
+          </span>
+        </div> */}
 
         {/* Calendar grid */}
         <div className="p-3">
