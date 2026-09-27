@@ -7,6 +7,7 @@ import {
   deleteFinancialAccount,
   getFinancialAccountById,
   getFinancialAccounts,
+  getFinancialAccountSummary,
   updateFinancialAccount,
 } from "../api/financial-account.api";
 
@@ -88,5 +89,14 @@ export function useDeleteFinancialAccount() {
         queryKey: financialAccountKeys.detail(variables.id),
       });
     },
+  });
+}
+
+
+export function useFinancialAccountSummary(options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: [...financialAccountKeys.all, "summary"],
+    queryFn: () => getFinancialAccountSummary(),
+    enabled: options?.enabled ?? true,
   });
 }

@@ -17,6 +17,7 @@ import {
 import {
   useDeleteFinancialAccount,
   useFinancialAccounts,
+  useFinancialAccountSummary,
 } from "@/features/financial-account/hooks/use-financial-account";
 
 import {
@@ -106,6 +107,11 @@ export function FinancialAccountPageClient() {
   const rows = list.data?.data ?? [];
   const meta = list.data?.meta;
 
+  const summary = useFinancialAccountSummary();
+  const stats = summary.data?.data;
+
+
+
   const totalBalance = rows.reduce((sum, row) => sum + row.openingBalance, 0);
   const activeCount = rows.filter((row) => row.status === "ACTIVE").length;
 
@@ -167,6 +173,15 @@ export function FinancialAccountPageClient() {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+
+        <StatCard
+          title="Total Current Balance"
+          value={money(stats?.totalCurrentBalance)}
+          caption={`Opening: ${money(stats?.totalOpeningBalance)}`}
+          icon={Wallet}
+          tone="bg-blue-500/10 text-blue-600"
+        />
+
         <StatCard
           title="Total Accounts"
           value={String(meta?.total ?? rows.length)}

@@ -267,6 +267,21 @@ export interface LeadFilters {
   endDate?: string;   // "YYYY-MM-DD"
 }
 
+
+export interface FollowUpCalendarLead {
+  _id: string;
+  fullName: string;
+  phone: string;
+  status: string;
+  contactStatus?: string;
+  nextContactAt: string;
+  notes: { message: string; createdAt?: string }[];
+}
+
+export interface FollowUpCalendarEntry {
+  date: string;
+  leads: FollowUpCalendarLead[];
+}
 export type GetLeadsResponse = ApiResponse<ILead[], LeadStatsData>;
 
 export type GetLeadResponse = ApiResponse<ILead>;

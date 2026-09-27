@@ -30,6 +30,7 @@ export interface IFinancialAccount {
   branchName?: string;
 
   openingBalance: number;
+  currentBalance: number;
   currency: string;
 
   description?: string;
@@ -43,4 +44,34 @@ export interface IFinancialAccount {
 
   createdAt: string;
   updatedAt: string;
+}
+
+// export interface FinancialAccountSummary {
+//   totalAccounts: number;
+//   totalOpeningBalance: number;
+//   totalCurrentBalance: number;
+//   totalSpent: number;
+
+//   accounts: Array<
+//     Pick<
+//       IFinancialAccount,
+//       | "_id"
+//       | "accountName"
+//       | "accountType"
+//       | "openingBalance"
+//       | "currentBalance"
+//     >
+//   >;
+// }
+
+export interface FinancialAccountSummary {
+  totalAccounts: number;
+  totalOpeningBalance: number;
+  totalCurrentBalance: number;
+  totalSpent: number;
+
+  accounts: Pick<
+    IFinancialAccount,
+    "_id" | "accountName" | "accountType" | "openingBalance" | "currentBalance"
+  >[];
 }

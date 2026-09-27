@@ -8,6 +8,7 @@ import type {
   ConvertLeadPayload,
   CreateLeadPayload,
   DeleteLeadResponse,
+  FollowUpCalendarEntry,
   GetLeadResponse,
   ILead,
   LeadFilters,
@@ -61,6 +62,8 @@ export const leadApi = {
     apiClient.get<GetLeadResponse>(
       `${BASE_URL}/${id}`,
     ),
+ getFollowUpCalendar: () =>
+    apiClient.get<ApiResponse<FollowUpCalendarEntry[]>>(`${BASE_URL}/calendar`), // ⬅️ যোগ করুন
 
   importLeads: (file: File) => {
     const formData = new FormData();
