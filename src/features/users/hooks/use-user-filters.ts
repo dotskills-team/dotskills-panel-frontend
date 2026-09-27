@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import type { GetUsersParams } from "../api/user.api";
 
 interface UserFiltersState {
-  search: string;
+  searchTerm: string;
   role?: string;
   status?: string;
   department?: string;
@@ -17,7 +17,7 @@ interface UserFiltersState {
 }
 
 const DEFAULT_FILTERS: UserFiltersState = {
-  search: "",
+  searchTerm: "",
   page: 1,
   limit: 10,
 };
@@ -30,7 +30,7 @@ export const useUserFilters = () => {
       setFilters((prev) => ({
         ...prev,
         ...updates,
-        page: updates.page ?? (updates.search || Object.keys(updates).length > 1 ? 1 : prev.page),
+        page: updates.page ?? (updates.searchTerm || Object.keys(updates).length > 1 ? 1 : prev.page),
       }));
     },
     [],
@@ -40,8 +40,8 @@ export const useUserFilters = () => {
     setFilters(DEFAULT_FILTERS);
   }, []);
 
-  const setSearch = useCallback((search: string) => {
-    updateFilters({ search, page: 1 });
+  const setSearch = useCallback((searchTerm: string) => {
+    updateFilters({ searchTerm, page: 1 });
   }, [updateFilters]);
 
   const setRole = useCallback((role?: string) => {
@@ -85,7 +85,7 @@ export const useUserFilters = () => {
       limit: filters.limit,
     };
 
-    if (filters.search) params.search = filters.search;
+    if (filters.searchTerm) params.searchTerm = filters.searchTerm;
     if (filters.role) params.role = filters.role;
     if (filters.status) params.status = filters.status;
     if (filters.department) params.department = filters.department;

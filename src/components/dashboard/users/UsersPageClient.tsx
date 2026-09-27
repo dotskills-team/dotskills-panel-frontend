@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, LayoutGrid, Table } from "lucide-react";
 import type { User } from "@/types/user.types";
+import type { UserStatsData } from "@/components/dashboard/users/cards/user-stats-cards";
 import {
   useUsers,
   useUserFilters,
-  useUserStats,
   useCreateUser,
   useUpdateUser,
   useDeleteUser,
@@ -30,6 +30,7 @@ import type {
   CreateUserInput,
   UpdateUserInput,
 } from "@/features/users/schemas/user.schema";
+import { UsersToolbar } from "./usertoolbar";
 
 export function UsersPageClient() {
   const [view, setView] = useState<"table" | "grid">("table");
@@ -48,7 +49,7 @@ export function UsersPageClient() {
 
   const { data: response, isLoading } = useUsers(queryParams);
   const users = response?.data || [];
-  const stats = useUserStats(users);
+  const stats = response?.stats as UserStatsData | undefined;
 
   const createUserMutation = useCreateUser();
   const updateUserMutation = useUpdateUser(selectedUser?._id || "");
@@ -98,11 +99,10 @@ export function UsersPageClient() {
   const handleUpdateUser = useCallback(
     async (data: UpdateUserInput) => {
       if (selectedUser) {
-        // await updateUserMutation.mutateAsync(data);
         await updateUserMutation.mutateAsync({
-        ...data,
-        avatar: data.avatar ?? undefined,
-      });
+          ...data,
+          avatar: data.avatar ?? undefined,
+        });
       }
     },
     [selectedUser, updateUserMutation],
@@ -130,10 +130,10 @@ export function UsersPageClient() {
     <div className="bg-gray-100 dark:bg-slate-950 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             Team Members
           </h1>
-          <p className="mt-1 text-sm text-[var(--muted-fg)]">
+          <p className="mt-1 text-sm text-(--muted-fg)">
             Manage who has access to DotSkills Panel and what they can do.
           </p>
         </div>
@@ -148,7 +148,17 @@ export function UsersPageClient() {
 
       <UserStatsCards stats={stats} isLoading={isLoading} />
 
-      <UserFilters
+      {/* <UserFilters
+        filters={filters}
+        onSearch={filterMethods.setSearch}
+        onRoleChange={filterMethods.setRole}
+        onStatusChange={filterMethods.setStatus}
+        onDepartmentChange={filterMethods.setDepartment}
+        onDesignationChange={filterMethods.setDesignation}
+        onClear={filterMethods.clearFilters}
+      /> */}
+      
+      <UsersToolbar
         filters={filters}
         onSearch={filterMethods.setSearch}
         onRoleChange={filterMethods.setRole}

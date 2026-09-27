@@ -2,10 +2,16 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, CheckCircle2, AlertCircle, Lock } from "lucide-react";
-import type { UserStats } from "@/features/users/hooks";
+
+export interface UserStatsData {
+  totalCount: number;
+  ACTIVE: number;
+  INACTIVE: number;
+  SUSPENDED: number;
+}
 
 interface UserStatsCardsProps {
-  stats?: UserStats;
+  stats?: UserStatsData;
   isLoading?: boolean;
 }
 
@@ -13,25 +19,25 @@ export function UserStatsCards({ stats, isLoading }: UserStatsCardsProps) {
   const statCards = [
     {
       title: "Total Users",
-      value: stats?.total || 0,
+      value: stats?.totalCount || 0,
       icon: Users,
       color: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
     },
     {
       title: "Active Users",
-      value: stats?.active || 0,
+      value: stats?.ACTIVE || 0,
       icon: CheckCircle2,
       color: "bg-green-500/10 text-green-600 dark:text-green-400",
     },
     {
       title: "Inactive Users",
-      value: stats?.inactive || 0,
+      value: stats?.INACTIVE || 0,
       icon: AlertCircle,
       color: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
     },
     {
       title: "Suspended Users",
-      value: stats?.suspended || 0,
+      value: stats?.SUSPENDED || 0,
       icon: Lock,
       color: "bg-red-500/10 text-red-600 dark:text-red-400",
     },

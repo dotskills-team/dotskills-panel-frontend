@@ -96,6 +96,13 @@ export const projectApi = {
             `${BASE_URL}/${id}/send-invoice`,
             { pdfBase64 },
         ),
+            /**
+     * permanent project delete
+     */
+permanentDeleteProject: (id: string) =>
+    apiClient.delete<ApiResponse<null>>(
+        `${BASE_URL}/${id}/delete`,
+    ),
 };
 
 export default projectApi;
