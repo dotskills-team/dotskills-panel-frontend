@@ -79,14 +79,39 @@ export function getProjectsTableColumns({
         </span>
       ),
     },
+    // {
+    //   accessorKey: "status",
+    //   header: "Status",
+    //   cell: ({ row }) => {
+    //     const config = PROJECT_STATUS_CONFIG[row.original.status];
+    //     return (
+    //       <Badge variant="outline" className={config.className}>
+    //         {config.label}
+    //       </Badge>
+    //     );
+    //   },
+    // },
     {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        const config = PROJECT_STATUS_CONFIG[row.original.status];
+        const status = row.original.status;
+        const config = PROJECT_STATUS_CONFIG[status];
+
+        const label =
+          config?.label ??
+          status
+            ?.toLowerCase()
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, (char) => char.toUpperCase()) ??
+          "Unknown";
+
         return (
-          <Badge variant="outline" className={config.className}>
-            {config.label}
+          <Badge
+            variant="outline"
+            className={config?.className ?? "text-muted-foreground"}
+          >
+            {label}
           </Badge>
         );
       },

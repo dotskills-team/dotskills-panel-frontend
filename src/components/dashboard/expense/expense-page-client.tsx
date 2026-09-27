@@ -43,35 +43,95 @@ const nameOf = (value: unknown, key: string) => {
   return (value as Record<string, string>)[key] ?? "—";
 };
 
+// function StatCard({
+//   title,
+//   value,
+//   caption,
+//   icon: Icon,
+//   tone,
+// }: {
+//   title: string;
+//   value: string;
+//   caption: string;
+//   icon: typeof Receipt;
+//   tone: string;
+// }) {
+//   return (
+//     <Card className="rounded-xl border-0 bg-gray-100 dark:bg-slate-900 ease-in-out duration-500 transform hover:bg-slate-950 hover:scale-105 shadow-sm overflow-hidden transition-shadow hover:-translate-y-0.5 hover:shadow-md">
+//       <CardContent className="flex items-center gap-3 p-4">
+//         <div className={cn("flex size-11 shrink-0 items-center justify-center rounded-xl", tone)}>
+//           <Icon />
+//         </div>
+//         <div className="min-w-0">
+//           <p className="text-xs text-muted-foreground">{title}</p>
+//           <p className="mt-1 text-lg font-semibold tracking-tight">{value}</p>
+//           <p className="truncate text-xs text-muted-foreground">{caption}</p>
+//         </div>
+//       </CardContent>
+//     </Card>
+//   );
+// }
 function StatCard({
   title,
   value,
   caption,
   icon: Icon,
   tone,
+  gradient,
 }: {
   title: string;
   value: string;
   caption: string;
   icon: typeof Receipt;
   tone: string;
+  gradient: string;
 }) {
   return (
-    <Card className="rounded-xl border-0 bg-gray-100 dark:bg-slate-900 ease-in-out duration-500 transform hover:bg-slate-950 hover:scale-105 shadow-sm overflow-hidden transition-shadow hover:-translate-y-0.5 hover:shadow-md">
-      <CardContent className="flex items-center gap-3 p-4">
-        <div className={cn("flex size-11 shrink-0 items-center justify-center rounded-xl", tone)}>
-          <Icon />
+    <Card
+      className={cn(
+        "group relative overflow-hidden rounded-2xl border-0",
+        "bg-gradient-to-br text-white shadow-lg",
+        "transition-all duration-300",
+        "hover:-translate-y-1 hover:shadow-xl",
+        gradient,
+      )}
+    >
+      {/* Decorative background */}
+      <div className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-white/10 transition-transform duration-500 group-hover:scale-125" />
+
+      <div className="pointer-events-none absolute -bottom-12 -left-8 size-28 rounded-full bg-black/5" />
+
+      <CardContent className="relative flex items-center gap-4 p-5">
+        {/* Icon */}
+        <div
+          className={cn(
+            "flex size-12 shrink-0 items-center justify-center rounded-xl",
+            "bg-white/15 backdrop-blur-sm",
+            "ring-1 ring-white/10",
+            tone,
+          )}
+        >
+          <Icon className="size-6" strokeWidth={2.2} />
         </div>
-        <div className="min-w-0">
-          <p className="text-xs text-muted-foreground">{title}</p>
-          <p className="mt-1 text-lg font-semibold tracking-tight">{value}</p>
-          <p className="truncate text-xs text-muted-foreground">{caption}</p>
+
+        {/* Content */}
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-medium text-white/75">
+            {title}
+          </p>
+
+          <p className="mt-1 truncate text-2xl font-bold tracking-tight">
+            {value}
+          </p>
+
+          <p className="mt-1 truncate text-[11px] text-white/65">
+            {caption}
+          </p>
         </div>
       </CardContent>
     </Card>
   );
 }
-
 export function ExpensePageClient() {
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState("ALL");
@@ -157,22 +217,25 @@ export function ExpensePageClient() {
         </Button>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
-        <StatCard
-          title="Total Expenses"
-          value={String(meta?.total ?? rows.length)}
-          caption="All expense records"
-          icon={Receipt}
-          tone="bg-primary/10 text-primary"
-        />
-        <StatCard
-          title="Total Amount"
-          value={money(totalAmount)}
-          caption="Sum on this page"
-          icon={CircleDollarSign}
-          tone="bg-rose-500/10 text-rose-600"
-        />
-      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+  <StatCard
+    title="Total Expenses"
+    value={String(meta?.total ?? rows.length)}
+    caption="All expense records"
+    icon={Receipt}
+    tone="text-blue-100"
+    gradient="from-blue-600 via-indigo-600 to-violet-600"
+  />
+
+  <StatCard
+    title="Total Amount"
+    value={money(totalAmount)}
+    caption="Sum on this page"
+    icon={CircleDollarSign}
+    tone="text-rose-100"
+    gradient="from-rose-500 via-pink-600 to-fuchsia-600"
+  />
+</div>
 
       <Card className="bg-slate-100 dark:bg-slate-950 p-0">
         <CardContent className="flex flex-col gap-4 p-0">

@@ -71,23 +71,23 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
     },
 
     {
-      label: "Overview",
+      label: "Accounts",
     collapsible: true,
 
       items: [
         {
           id: "expenseCategory",
-          label: "expense-category",
+          label: "Expense-category",
           href: "/dashboard/expense-category",
         },
         {
           id: "expense",
-          label: "expenses",
+          label: "Expenses",
           href: "/dashboard/expenses",
         },
         {
           id: "financial",
-          label: "financial-account",
+          label: "Financial-account",
           href: "/dashboard/financial-account",
         },
       ],
