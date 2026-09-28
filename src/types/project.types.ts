@@ -175,4 +175,5 @@ export interface ProjectFilters {
   sort?: string;
   startDate?: string;
   endDate?: string;
+  paymentStatus?: PaymentStatus;
 }
