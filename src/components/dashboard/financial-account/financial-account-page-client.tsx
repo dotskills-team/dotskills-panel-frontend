@@ -261,8 +261,8 @@ export function FinancialAccountPageClient() {
   const [editing, setEditing] = useState<IFinancialAccount | null>(null);
   const [deleteTarget, setDeleteTarget] =
     useState<IFinancialAccount | null>(null);
-  const [viewing, setViewing] = useState<IFinancialAccount | null>(null);
-  /* ------------------------------------------------------------------------ */
+  // const [viewing, setViewing] = useState<IFinancialAccount | null>(null);
+  const [viewingId, setViewingId] = useState<string | null>(null);  /* ------------------------------------------------------------------------ */
   /*                                  Query                                   */
   /* ------------------------------------------------------------------------ */
 
@@ -287,6 +287,7 @@ export function FinancialAccountPageClient() {
   const deleteMutation = useDeleteFinancialAccount();
 
   const rows = list.data?.data ?? [];
+  const viewing = rows.find((row) => row._id === viewingId) ?? null;
   const meta = list.data?.meta;
 
   const summary = useFinancialAccountSummary();
@@ -363,7 +364,7 @@ export function FinancialAccountPageClient() {
       <FinancialAccountDetailsSheet
         account={viewing}
         open={Boolean(viewing)}
-        onOpenChange={(open) => !open && setViewing(null)}
+        onOpenChange={(open) => !open && setViewingId(null)}
         onEdit={openEdit}
       />
       {/* ------------------------------------------------------------------ */}
@@ -698,11 +699,12 @@ export function FinancialAccountPageClient() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => setViewing(account)}
+                            onClick={() => setViewingId(account._id)}
                             aria-label="View account details"
                           >
                             <Eye />
                           </Button>
+
                           <Button
                             variant="ghost"
                             size="icon"

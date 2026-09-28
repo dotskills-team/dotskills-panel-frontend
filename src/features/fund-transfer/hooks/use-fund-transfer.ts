@@ -6,6 +6,7 @@ import type {
   CreateFundTransferInput,
   FundTransferQueryInput,
 } from "../schemas/fund-transfer.schema";
+import { syncFinancialAccounts } from "@/features/financial-account/utils/financial-sync";
 
 export const fundTransferKeys = {
   all: ["fund-transfers"] as const,
@@ -21,14 +22,22 @@ export function useFundTransfers(query: FundTransferQueryInput = {}) {
 }
 
 // Transfer balance বদলায়, তাই financial-accounts আর expenses cache-ও refresh করতে হবে
+// function useInvalidateAfterTransfer() {
+//   const queryClient = useQueryClient();
+//   return () => {
+//     queryClient.invalidateQueries({ queryKey: fundTransferKeys.all });
+//     queryClient.invalidateQueries({ queryKey: ["financial-accounts"] });
+//   };
+// }
 function useInvalidateAfterTransfer() {
   const queryClient = useQueryClient();
-  return () => {
-    queryClient.invalidateQueries({ queryKey: fundTransferKeys.all });
-    queryClient.invalidateQueries({ queryKey: ["financial-accounts"] });
+  return async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: fundTransferKeys.all }),
+      syncFinancialAccounts(queryClient),
+    ]);
   };
 }
-
 export function useCreateFundTransfer() {
   const invalidate = useInvalidateAfterTransfer();
   return useMutation({

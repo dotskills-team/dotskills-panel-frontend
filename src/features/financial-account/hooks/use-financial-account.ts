@@ -26,6 +26,17 @@ export const financialAccountKeys = {
   detail: (id: string) => [...financialAccountKeys.details(), id] as const,
 };
 
+// export function useFinancialAccounts(
+//   query: FinancialAccountQueryInput = {},
+//   options?: { enabled?: boolean },
+// ) {
+//   return useQuery({
+//     queryKey: financialAccountKeys.list(query),
+//     queryFn: () => getFinancialAccounts(query),
+//     enabled: options?.enabled ?? true,
+//     placeholderData: (previousData) => previousData,
+//   });
+// }
 export function useFinancialAccounts(
   query: FinancialAccountQueryInput = {},
   options?: { enabled?: boolean },
@@ -35,9 +46,10 @@ export function useFinancialAccounts(
     queryFn: () => getFinancialAccounts(query),
     enabled: options?.enabled ?? true,
     placeholderData: (previousData) => previousData,
+    staleTime: 0,                
+    refetchOnMount: "always",    
   });
 }
-
 export function useFinancialAccount(id?: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: financialAccountKeys.detail(id ?? ""),
@@ -93,10 +105,25 @@ export function useDeleteFinancialAccount() {
 }
 
 
+// export function useFinancialAccountSummary(options?: { enabled?: boolean }) {
+//   return useQuery({
+//     queryKey: [...financialAccountKeys.all, "summary"],
+//     queryFn: () => getFinancialAccountSummary(),
+//     enabled: options?.enabled ?? true,
+//   });
+// }
+
+
+
+
+
+
 export function useFinancialAccountSummary(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: [...financialAccountKeys.all, "summary"],
     queryFn: () => getFinancialAccountSummary(),
     enabled: options?.enabled ?? true,
+    staleTime: 0,                // ⬅️ নতুন
+    refetchOnMount: "always",    // ⬅️ নতুন
   });
 }
