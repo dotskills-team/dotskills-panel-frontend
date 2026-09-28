@@ -335,7 +335,7 @@ export function ProjectFormDialog({ mode, project, open, onOpenChange }: Project
                                         <SelectValue placeholder="Select client" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {clients?.map((client) => (
+                                        {clients?.data?.map((client: any) => (
                                             <SelectItem key={client._id} value={client._id}>
                                                 {getUserFullName(client)}
                                             </SelectItem>

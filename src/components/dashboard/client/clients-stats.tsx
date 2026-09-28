@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,33 +15,40 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { IClientStats } from "@/types/clients";
 
-const stats = [
+const stats: {
+  icon: typeof Users;
+  label: string;
+  key: keyof IClientStats;
+  color: string;
+  format: (value: number) => string;
+}[] = [
   {
     icon: Users,
     label: "Total Clients",
-    key: "total" as const,
+    key: "total",
     color: "from-blue-500 to-blue-600",
     format: formatNumber,
   },
   {
     icon: TrendingUp,
     label: "Active Clients",
-    key: "active" as const,
+    key: "Active",
     color: "from-emerald-500 to-emerald-600",
     format: formatNumber,
   },
   {
     icon: DollarSign,
     label: "Total Revenue",
-    key: "revenue" as const,
+    key: "totalRevenue",
     color: "from-amber-500 to-amber-600",
     format: formatCurrency,
   },
   {
     icon: Briefcase,
     label: "Total Projects",
-    key: "projects" as const,
+    key: "totalProjects",
     color: "from-purple-500 to-purple-600",
     format: formatNumber,
   },
@@ -50,13 +57,15 @@ const stats = [
 export function ClientsStats() {
   const { stats: clientStats, isLoading } = useClientStats();
 
+  const activePercent =
+    clientStats?.total > 0
+      ? Math.round((clientStats.Active / clientStats.total) * 100)
+      : 0;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat) => {
-        const statValue =
-          stat.key === "projects"
-            ? 0
-            : clientStats[stat.key];
+        const statValue = clientStats?.[stat.key] ?? 0;
 
         return (
           <Card
@@ -80,7 +89,7 @@ export function ClientsStats() {
                     <div
                       className={cn(
                         "h-10 w-10 rounded-lg flex items-center justify-center text-white bg-linear-to-br",
-                        stat.color
+                        stat.color,
                       )}
                     >
                       <stat.icon className="h-5 w-5" />
@@ -89,17 +98,10 @@ export function ClientsStats() {
                   <p className="text-xs font-medium text-muted-foreground">
                     {stat.label}
                   </p>
-                  {stat.key === "active" && (
+                  {stat.key === "Active" && (
                     <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
                       <ArrowUpRight className="h-3 w-3" />
-                      <span>
-                        {(
-                          (clientStats.active /
-                            clientStats.total) *
-                          100
-                        ).toFixed(0)}
-                        % of total
-                      </span>
+                      <span>{activePercent}% of total</span>
                     </div>
                   )}
                 </div>

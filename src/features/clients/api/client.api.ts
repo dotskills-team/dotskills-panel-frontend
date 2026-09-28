@@ -6,6 +6,7 @@ import type {
   AddClientNotePayload,
   AssignClientManagerPayload,
   ClientFilters,
+  ClientListResponse,
   CreateClientPayload,
   DeleteClientResponse,
   GetClientResponse,
@@ -37,14 +38,12 @@ const buildQuery = (params?: ClientFilters) => {
 };
 
 export const clientApi = {
-  getClients: (params?: ClientFilters) =>
-    apiClient.get<ApiResponse<IClient[]>>(
-      `${BASE_URL}${buildQuery(params)}`,
-    ),
+  getClients: (filters?: ClientFilters) =>
+    apiClient.get<ClientListResponse>(`${BASE_URL}${buildQuery(filters)}`),
 
-  getDeletedClients: (params?: ClientFilters) =>
-    apiClient.get<ApiResponse<IClient[]>>(
-      `${BASE_URL}/trash${buildQuery(params)}`,
+  getDeletedClients: (filters?: ClientFilters) =>
+    apiClient.get<ClientListResponse>(
+      `${BASE_URL}/deleted${buildQuery(filters)}`,
     ),
 
   getClient: (id: string) =>

@@ -7,6 +7,7 @@ export enum ClientStatus {
   BLACKLISTED = "BLACKLISTED",
 }
 
+
 export enum ClientType {
   INDIVIDUAL = "INDIVIDUAL",
   COMPANY = "COMPANY",
@@ -228,4 +229,30 @@ export interface GetClientResponse {
   success: boolean;
   message: string;
   data: IClient;
+}
+
+export interface IClientStats {
+  total: number;
+  Active: number;
+  Inactive: number;
+  Suspended: number;
+  Blacklisted: number;
+  totalProjects: number;
+  completedProjects: number;
+  activeProjects: number;
+  totalRevenue: number;
+  totalInvoices: number;
+  totalPaid: number;
+  totalDue: number;
+}
+
+export interface ClientListResponse {
+  data: IClient[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPage: number;
+  };
+  stats: IClientStats;
 }

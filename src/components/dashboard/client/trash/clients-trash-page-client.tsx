@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
@@ -9,21 +9,58 @@ import { getClientFullName } from "@/features/clients/utils/client.utils";
 import { exportClients } from "@/features/clients/utils/export.utils";
 import { useAuthStore } from "@/stores";
 import { Role } from "@/types";
-import type { IClient } from "@/types/clients";
+import type { ClientFilters, IClient } from "@/types/clients";
 
 import { ClientsTrashEmptyState } from "./clients-trash-empty-state";
 import { ClientsTrashTable } from "./clients-trash-table";
 import { ClientsTrashToolbar } from "./clients-trash-toolbar";
+import { ProjectsPagination } from "../../project/ProjectPagination";
 
 export function ClientsTrashPageClient() {
-  const { data: clients = [], isLoading, isFetching, refetch } = useDeletedClients();
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [status, setStatus] = useState("");
+
+  // Debounce search, reset to page 1 when it changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const filters: ClientFilters = {
+    page,
+    limit,
+    ...(debouncedSearch ? { searchTerm: debouncedSearch } : {}),
+    ...(status ? { status: status as ClientFilters["status"] } : {}),
+  };
+
+  const {
+    data: response,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useDeletedClients(filters);
+
+  const clients: IClient[] = response?.data ?? [];
+  const meta = response?.meta;
+
+  // If the last item on the last page was removed, step back a page
+  useEffect(() => {
+    if (meta && meta.totalPage > 0 && page > meta.totalPage) {
+      setPage(meta.totalPage);
+    }
+  }, [meta, page]);
+
   const { restoreClient, permanentlyDeleteClient } = useClientMutations();
 
   const currentRole = useAuthStore((state) => state.user?.role);
   const canPermanentlyDelete = currentRole === Role.SUPER_ADMIN;
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [status, setStatus] = useState("");
 
   const [restoreTarget, setRestoreTarget] = useState<IClient | null>(null);
   const [restoreOpen, setRestoreOpen] = useState(false);
@@ -31,29 +68,23 @@ export function ClientsTrashPageClient() {
   const [deleteTarget, setDeleteTarget] = useState<IClient | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const filteredClients = useMemo(() => {
-    return clients.filter((client) => {
-      const term = searchTerm.trim().toLowerCase();
-
-      const matchesSearch =
-        !term ||
-        getClientFullName(client).toLowerCase().includes(term) ||
-        client.leadId?.email?.toLowerCase().includes(term) ||
-        client.leadId?.phone?.includes(term) ||
-        client.companyName?.toLowerCase().includes(term) ||
-        client.clientCode?.toLowerCase().includes(term);
-
-      const matchesStatus = !status || client.status === status;
-
-      return matchesSearch && matchesStatus;
-    });
-  }, [clients, searchTerm, status]);
-
   const hasActiveFilters = Boolean(searchTerm) || Boolean(status);
+
+  function handleStatusChange(value: string) {
+    setStatus(value);
+    setPage(1);
+  }
+
+  function handleLimitChange(value: number) {
+    setLimit(value);
+    setPage(1);
+  }
 
   function handleClearFilters() {
     setSearchTerm("");
+    setDebouncedSearch("");
     setStatus("");
+    setPage(1);
   }
 
   function handleRestoreRequest(client: IClient) {
@@ -93,12 +124,12 @@ export function ClientsTrashPageClient() {
   }
 
   function handleExport() {
-    if (filteredClients.length === 0) {
+    if (clients.length === 0) {
       toast.error("There are no deleted clients to export.");
       return;
     }
 
-    exportClients(filteredClients, {
+    exportClients(clients, {
       filename: `clients-trash-${new Date().toISOString().slice(0, 10)}.csv`,
     });
     toast.success("Trash exported successfully.");
@@ -107,7 +138,9 @@ export function ClientsTrashPageClient() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Clients Trash</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          Clients Trash
+        </h1>
         <p className="text-sm text-muted-foreground">
           Deleted clients are kept here until restored or permanently removed.
         </p>
@@ -117,15 +150,15 @@ export function ClientsTrashPageClient() {
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         status={status}
-        onStatusChange={setStatus}
+        onStatusChange={handleStatusChange}
         onRefresh={() => refetch()}
         isRefreshing={isFetching}
         onExport={handleExport}
-        exportDisabled={filteredClients.length === 0}
+        exportDisabled={clients.length === 0}
       />
 
       <ClientsTrashTable
-        clients={filteredClients}
+        clients={clients}
         isLoading={isLoading}
         canPermanentlyDelete={canPermanentlyDelete}
         onRestore={handleRestoreRequest}
@@ -137,6 +170,17 @@ export function ClientsTrashPageClient() {
           />
         }
       />
+
+      {meta && meta.total > 0 && (
+        <ProjectsPagination
+          page={meta.page}
+          limit={meta.limit}
+          total={meta.total}
+          totalPage={meta.totalPage}
+          onPageChange={setPage}
+          onLimitChange={handleLimitChange}
+        />
+      )}
 
       <ConfirmDialog
         open={restoreOpen}
