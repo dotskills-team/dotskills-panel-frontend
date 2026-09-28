@@ -161,7 +161,7 @@ export function ProjectFormDialog({ mode, project, open, onOpenChange }: Project
     const { mutateAsync: sendInvoiceMutation } = useSendInvoice();
     const { data: usersResponse } = useAssignableUsers();
     const { data: clients } = useClients();
-
+console.log("clients ", clients)
     const users = usersResponse?.data ?? [];
     const form = useForm<CreateProjectFormValues, unknown, CreateProjectFormOutput>({
         resolver: zodResolver(createProjectFormSchema),
@@ -317,7 +317,7 @@ export function ProjectFormDialog({ mode, project, open, onOpenChange }: Project
                                         <SelectValue placeholder="Select client" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {clients?.map((client) => (
+                                        {clients?.data?.map((client: any) => (
                                             <SelectItem key={client._id} value={client._id}>
                                                 {getUserFullName(client)}
                                             </SelectItem>

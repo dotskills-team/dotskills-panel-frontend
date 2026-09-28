@@ -65,10 +65,10 @@ const EMPTY_VALUES: CreateClientValues = {
 };
 
 const clientToFormValues = (client: IClient): CreateClientValues => ({
-  firstName: client.firstName || client?.leadId?.firstName || "",
-  lastName: client.lastName || client?.leadId?.firstName || "",
-  email: client.leadId?.email ?? "",
-  phone: client.leadId?.phone ?? "",
+  firstName: client.firstName || client.leadId?.firstName || "",
+  lastName: client.lastName || client.leadId?.lastName || "",
+  email: client.email || client.leadId?.email || "",
+  phone: client.phone || client.leadId?.phone || "",
   alternatePhone: client.alternatePhone ?? "",
   companyName: client.companyName ?? "",
   companyWebsite: client.companyWebsite ?? "",
