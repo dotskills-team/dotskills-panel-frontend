@@ -28,6 +28,7 @@ import { useAuthStore } from "@/stores";
 import { useRouter } from "next/navigation";
 
 import { SidebarNavItems } from "./SidebarNavItems";
+import Image from "next/image";
 
 type PremiumSidebarProps = React.ComponentProps<typeof Sidebar> & {
   onSearchClick?: () => void;
@@ -113,7 +114,7 @@ export function PremiumSidebar({
     >
       {/* Brand */}
       <SidebarHeader className="gap-3 border-b border-border/60 bg-gray-100 dark:bg-slate-950 px-3 py-4">
-        <Link
+        {/* <Link
           href="/dashboard"
           onClick={handleLinkClick}
           className="flex items-center gap-2.5 rounded-lg px-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
@@ -134,7 +135,21 @@ export function PremiumSidebar({
               </span>
             </div>
           )}
-        </Link>
+        </Link> */}
+         <Link
+  href="/dashboard"
+  onClick={handleLinkClick}
+  className="flex w-full items-center rounded-lg px-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+>
+  <Image
+    src="/logo2.png"
+    alt="DotSkills"
+    width={200}
+    height={80}
+    className="h-auto w-full object-contain"
+    priority
+  />
+</Link>
 
         {isCollapsed ? (
           <Tooltip>
