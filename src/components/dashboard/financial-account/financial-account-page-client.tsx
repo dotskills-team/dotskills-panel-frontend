@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
+  Eye,
   ArrowLeft,
   ArrowRight,
   Banknote,
@@ -18,6 +19,8 @@ import {
   WalletCards,
 } from "lucide-react";
 
+
+import { FinancialAccountDetailsSheet } from "./financial-account-details-sheet";
 import {
   useDeleteFinancialAccount,
   useFinancialAccounts,
@@ -258,7 +261,7 @@ export function FinancialAccountPageClient() {
   const [editing, setEditing] = useState<IFinancialAccount | null>(null);
   const [deleteTarget, setDeleteTarget] =
     useState<IFinancialAccount | null>(null);
-
+  const [viewing, setViewing] = useState<IFinancialAccount | null>(null);
   /* ------------------------------------------------------------------------ */
   /*                                  Query                                   */
   /* ------------------------------------------------------------------------ */
@@ -275,7 +278,11 @@ export function FinancialAccountPageClient() {
     }),
     [page, limit, search, accountType, status, sort],
   );
-
+  const ownerName = (owner: IFinancialAccount["ownerId"]) => {
+    if (!owner) return "—";
+    if (typeof owner === "string") return owner;
+    return `${owner.firstName ?? ""} ${owner.lastName ?? ""}`.trim() || "—";
+  };
   const list = useFinancialAccounts(query);
   const deleteMutation = useDeleteFinancialAccount();
 
@@ -353,7 +360,12 @@ export function FinancialAccountPageClient() {
         isLoading={deleteMutation.isPending}
         onConfirm={confirmDelete}
       />
-
+      <FinancialAccountDetailsSheet
+        account={viewing}
+        open={Boolean(viewing)}
+        onOpenChange={(open) => !open && setViewing(null)}
+        onEdit={openEdit}
+      />
       {/* ------------------------------------------------------------------ */}
       {/*                              Header                                */}
       {/* ------------------------------------------------------------------ */}
@@ -418,6 +430,7 @@ export function FinancialAccountPageClient() {
           className="bg-gradient-to-br from-cyan-500 to-blue-600 shadow-cyan-500/20"
           iconClassName="text-cyan-100"
         />
+
       </div>
 
       {/* ------------------------------------------------------------------ */}
@@ -597,6 +610,7 @@ export function FinancialAccountPageClient() {
                   <tr className="border-b bg-indigo-600 text-left text-xs text-white">
                     <th className="p-3 font-medium">Account</th>
                     <th className="p-3 font-medium">Type</th>
+                    <th className="p-3 font-medium">Owner</th>
                     <th className="p-3 font-medium">Number</th>
                     <th className="p-3 font-medium">
                       Opening Balance
@@ -639,7 +653,7 @@ export function FinancialAccountPageClient() {
                           )?.label ?? account.accountType}
                         </Badge>
                       </td>
-
+                      <td className="p-3">{ownerName(account.ownerId)}</td>
                       {/* Number */}
                       <td className="p-3 text-muted-foreground">
                         {account.accountNumber || "—"}
@@ -681,6 +695,14 @@ export function FinancialAccountPageClient() {
                       {/* Actions */}
                       <td className="p-3">
                         <div className="flex justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setViewing(account)}
+                            aria-label="View account details"
+                          >
+                            <Eye />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"

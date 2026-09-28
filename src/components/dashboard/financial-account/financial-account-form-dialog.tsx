@@ -41,6 +41,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useUsers } from "@/features/users/hooks/useUsers";
+import { getUserFullName } from "@/features/users/utils/user.utils";
 
 interface FinancialAccountFormDialogProps {
   open: boolean;
@@ -60,6 +62,7 @@ const emptyForm = {
   currency: "BDT",
   description: "",
   status: AccountStatus.ACTIVE,
+  ownerId: "NONE",
 };
 
 export function FinancialAccountFormDialog({
@@ -72,7 +75,8 @@ export function FinancialAccountFormDialog({
   const createMutation = useCreateFinancialAccount();
   const updateMutation = useUpdateFinancialAccount();
   const isPending = createMutation.isPending || updateMutation.isPending;
-
+  const usersQuery = useUsers({ page: 1, limit: 100, status: "ACTIVE" }, { enabled: open });
+  const users = usersQuery.data?.data ?? [];
   useEffect(() => {
     if (existing) {
       setForm({
@@ -87,6 +91,10 @@ export function FinancialAccountFormDialog({
         currency: existing.currency,
         description: existing.description ?? "",
         status: existing.status,
+        ownerId:
+          typeof existing.ownerId === "string"
+            ? existing.ownerId
+            : existing.ownerId?._id ?? "NONE",
       });
     } else {
       setForm(emptyForm);
@@ -127,57 +135,57 @@ export function FinancialAccountFormDialog({
   //     );
   //   }
   // };
-const submit = async (event: React.FormEvent) => {
-  event.preventDefault();
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
 
-  const formData = {
-    ...form,
-    openingBalance: Number(form.openingBalance),
-  };
+    const ownerId =
+      form.ownerId && form.ownerId !== "NONE" ? form.ownerId : isEdit ? null : undefined;
+    const providerName =
+      form.accountType === AccountType.MOBILE_BANKING && form.providerName
+        ? form.providerName
+        : isEdit
+          ? null
+          : undefined;
+    const formData = {
+      ...form,
+      ownerId,
+      providerName,
+      openingBalance: Number(form.openingBalance),
+    };
 
-  try {
-    if (isEdit && existing) {
-      const parsed = updateFinancialAccountSchema.safeParse(formData);
+    try {
+      if (isEdit && existing) {
+        const parsed = updateFinancialAccountSchema.safeParse(formData);
 
-      if (!parsed.success) {
-        toast.error(
-          parsed.error.issues[0]?.message ??
-            "Please check the account details.",
-        );
-        return;
+        if (!parsed.success) {
+          toast.error(parsed.error.issues[0]?.message ?? "Please check the account details.");
+          return;
+        }
+
+        await updateMutation.mutateAsync({
+          id: existing._id,
+          payload: parsed.data,
+        });
+
+        toast.success("Financial account updated successfully.");
+      } else {
+        const parsed = createFinancialAccountSchema.safeParse(formData);
+
+        if (!parsed.success) {
+          toast.error(parsed.error.issues[0]?.message ?? "Please check the account details.");
+          return;
+        }
+
+        await createMutation.mutateAsync(parsed.data);
+
+        toast.success("Financial account created successfully.");
       }
 
-      await updateMutation.mutateAsync({
-        id: existing._id,
-        payload: parsed.data,
-      });
-
-      toast.success("Financial account updated successfully.");
-    } else {
-      const parsed = createFinancialAccountSchema.safeParse(formData);
-
-      if (!parsed.success) {
-        toast.error(
-          parsed.error.issues[0]?.message ??
-            "Please check the account details.",
-        );
-        return;
-      }
-
-      await createMutation.mutateAsync(parsed.data);
-
-      toast.success("Financial account created successfully.");
+      onOpenChange(false);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to save financial account.");
     }
-
-    onOpenChange(false);
-  } catch (error) {
-    toast.error(
-      error instanceof Error
-        ? error.message
-        : "Unable to save financial account.",
-    );
-  }
-};
+  };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
@@ -303,7 +311,25 @@ const submit = async (event: React.FormEvent) => {
               />
             </label>
           </div>
-
+          <label className="grid gap-2 text-sm font-medium">
+            Account Owner / Responsible Person
+            <Select
+              value={form.ownerId}
+              onValueChange={(value) => setForm({ ...form, ownerId: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select owner" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="NONE">No owner</SelectItem>
+                {users.map((user) => (
+                  <SelectItem key={user._id} value={user._id}>
+                    {getUserFullName(user)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </label>
           <label className="grid gap-2 text-sm font-medium">
             Status
             <Select

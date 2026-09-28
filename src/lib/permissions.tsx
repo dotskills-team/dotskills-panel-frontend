@@ -54,7 +54,8 @@ export type PageAccess =
   | "courier-settings"
   | "financial"
   | "expense"
-  | "expenseCategory";
+  | "expenseCategory"
+  | "fundTransfer";
 
 export interface Page {
   id: PageAccess;

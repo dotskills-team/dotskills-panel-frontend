@@ -44,6 +44,8 @@ export interface IFinancialAccount {
 
   createdAt: string;
   updatedAt: string;
+  ownerId?: { _id: string; firstName?: string; lastName?: string; email?: string } | string | null;
+
 }
 
 // export interface FinancialAccountSummary {
@@ -69,6 +71,12 @@ export interface FinancialAccountSummary {
   totalOpeningBalance: number;
   totalCurrentBalance: number;
   totalSpent: number;
+    byOwner: Array<{
+    ownerId: string | null;
+    ownerName: string;
+    accountCount: number;
+    totalBalance: number;
+  }>;
 
   accounts: Pick<
     IFinancialAccount,
