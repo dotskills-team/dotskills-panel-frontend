@@ -9,6 +9,7 @@ import { HeaderSearch } from "./HeaderSearch";
 import { UserMenu } from "./UserMenu";
 import ThemeToggle from "../header/ThemeToggle";
 import { CalculatorModal } from "@/components/calculator/calculator-modal";
+import HeaderFollowUpCalendar from "../header/HeaderFollowUpCalendar";
 
 export function DashboardHeader() {
   return (
@@ -29,6 +30,7 @@ export function DashboardHeader() {
                      <CalculatorModal />
 
           <HeaderSearch />
+          <HeaderFollowUpCalendar />
           <HeaderNotifications />
           <ThemeToggle />
           <Separator orientation="vertical" className="mx-1 h-5" />

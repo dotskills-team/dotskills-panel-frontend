@@ -39,6 +39,34 @@ import {
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { ExpenseCategoryFormDialog } from "./expense-category-form-dialog";
 
+// function StatCard({
+//   title,
+//   value,
+//   caption,
+//   icon: Icon,
+//   tone,
+// }: {
+//   title: string;
+//   value: string;
+//   caption: string;
+//   icon: typeof Tags;
+//   tone: string;
+// }) {
+//   return (
+//     <Card className="rounded-xl border-0 bg-gray-100 dark:bg-slate-900 ease-in-out duration-500 transform hover:bg-slate-950 hover:scale-105 shadow-sm overflow-hidden transition-shadow hover:-translate-y-0.5 hover:shadow-md">
+//       <CardContent className="flex items-center gap-3 p-4">
+//         <div className={cn("flex size-11 shrink-0 items-center justify-center rounded-xl", tone)}>
+//           <Icon />
+//         </div>
+//         <div className="min-w-0">
+//           <p className="text-xs text-muted-foreground">{title}</p>
+//           <p className="mt-1 text-lg font-semibold tracking-tight">{value}</p>
+//           <p className="truncate text-xs text-muted-foreground">{caption}</p>
+//         </div>
+//       </CardContent>
+//     </Card>
+//   );
+// }
 function StatCard({
   title,
   value,
@@ -53,21 +81,40 @@ function StatCard({
   tone: string;
 }) {
   return (
-    <Card className="rounded-xl border-0 bg-gray-100 dark:bg-slate-900 ease-in-out duration-500 transform hover:bg-slate-950 hover:scale-105 shadow-sm overflow-hidden transition-shadow hover:-translate-y-0.5 hover:shadow-md">
-      <CardContent className="flex items-center gap-3 p-4">
-        <div className={cn("flex size-11 shrink-0 items-center justify-center rounded-xl", tone)}>
-          <Icon />
+    <Card
+      className={cn(
+        "group relative overflow-hidden rounded-2xl border-0 shadow-sm",
+        "transition-all duration-300 hover:-translate-y-1 hover:shadow-lg",
+        tone,
+      )}
+    >
+      <CardContent className="relative flex items-center gap-4 p-5">
+        {/* Decorative background */}
+        <div className="absolute -right-8 -top-8 size-24 rounded-full bg-white/20 blur-2xl transition-transform duration-500 group-hover:scale-150" />
+
+        {/* Icon */}
+        <div className="relative flex size-12 shrink-0 items-center justify-center rounded-xl bg-white/20 text-white shadow-sm backdrop-blur-sm">
+          <Icon className="size-6" strokeWidth={2} />
         </div>
-        <div className="min-w-0">
-          <p className="text-xs text-muted-foreground">{title}</p>
-          <p className="mt-1 text-lg font-semibold tracking-tight">{value}</p>
-          <p className="truncate text-xs text-muted-foreground">{caption}</p>
+
+        {/* Content */}
+        <div className="relative min-w-0 text-white">
+          <p className="text-xs font-medium text-white/80">
+            {title}
+          </p>
+
+          <p className="mt-1 text-2xl font-bold tracking-tight">
+            {value}
+          </p>
+
+          <p className="mt-0.5 truncate text-xs text-white/75">
+            {caption}
+          </p>
         </div>
       </CardContent>
     </Card>
   );
 }
-
 export function ExpenseCategoryPageClient() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("ALL");
@@ -156,14 +203,15 @@ export function ExpenseCategoryPageClient() {
           value={String(meta?.total ?? rows.length)}
           caption="All expense categories"
           icon={FolderKanban}
-          tone="bg-primary/10 text-primary"
+          tone="bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-500"
         />
+
         <StatCard
           title="Active Categories"
           value={String(activeCount)}
           caption="Currently active"
           icon={Tags}
-          tone="bg-emerald-500/10 text-emerald-600"
+          tone="bg-gradient-to-br from-emerald-500 via-green-500 to-teal-500"
         />
       </div>
 

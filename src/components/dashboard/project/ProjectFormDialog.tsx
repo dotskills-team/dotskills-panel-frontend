@@ -42,6 +42,7 @@ import { useClients } from "@/features/clients/hooks";
 import { formatCurrency } from "@/features/project/utils/project.utils";
 import { generateInvoicePdfBase64 } from "@/features/project/pdf/generatePdfInovice";
 // import { generateInvoicePdfBase64 } from "@/features/project/pdf/generateInvoicePdf";
+import { useFinancialAccounts } from "@/features/financial-account/hooks/use-financial-account";
 
 interface ProjectFormDialogProps {
     mode: "create" | "edit";
@@ -123,6 +124,8 @@ const projectToFormValues = (project: IProject): CreateProjectFormValues => ({
         date: p.date?.slice(0, 10) ?? "",
         status: p.status,
         note: p.note ?? "",
+        financialAccountId: p.financialAccountId ?? "", //new
+
     })) ?? [],
     paymentSchedule: project.paymentSchedule?.map((installment) => ({
         installmentNo: installment.installmentNo,
@@ -161,7 +164,12 @@ export function ProjectFormDialog({ mode, project, open, onOpenChange }: Project
     const { mutateAsync: sendInvoiceMutation } = useSendInvoice();
     const { data: usersResponse } = useAssignableUsers();
     const { data: clients } = useClients();
-console.log("clients ", clients)
+
+
+    const { data: accountsData } = useFinancialAccounts({ status: "ACTIVE" as never, limit: 100 });
+    const accounts = accountsData?.data ?? [];
+
+
     const users = usersResponse?.data ?? [];
     const form = useForm<CreateProjectFormValues, unknown, CreateProjectFormOutput>({
         resolver: zodResolver(createProjectFormSchema),
@@ -296,6 +304,16 @@ console.log("clients ", clients)
         }
     });
 
+
+    // payments: project.payments?.map((p) => ({
+    //     amount: p.amount,
+    //     date: p.date?.slice(0, 10) ?? "",
+    //     status: p.status,
+    //     note: p.note ?? "",
+    //     financialAccountId: p.financialAccountId ?? "", // ⬅️ নতুন
+    // })) ?? [],
+
+      
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-2xl overflow-y-auto bg-gray-100 dark:bg-slate-950">
@@ -540,6 +558,8 @@ console.log("clients ", clients)
                                 <Field label="Next Payment Date">
                                     <Input type="date" {...form.register("nextPaymentDate")} />
                                 </Field>
+
+
                             </div>
 
                             {/* Live paid / due summary */}
@@ -579,6 +599,8 @@ console.log("clients ", clients)
                                             date: "",
                                             status: PaymentStatus.DUE,
                                             note: "",
+                                            financialAccountId: "", 
+
                                         })
                                     }
                                 >
@@ -634,12 +656,32 @@ console.log("clients ", clients)
                                                 </SelectContent>
                                             </Select>
                                         </Field>
+                                        <Field label="Account">
+                                            <Select
+                                                value={form.watch(`payments.${index}.financialAccountId`)}
+                                                onValueChange={(value) =>
+                                                    form.setValue(`payments.${index}.financialAccountId`, value)
+                                                }
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select account" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {accounts.map((account) => (
+                                                        <SelectItem key={account._id} value={account._id}>
+                                                            {account.accountName}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </Field>
                                         <Field label="Note">
                                             <Input
                                                 {...form.register(`payments.${index}.note` as const)}
                                                 placeholder="Optional note"
                                             />
                                         </Field>
+
                                         <div className="flex items-end">
                                             <Button
                                                 type="button"

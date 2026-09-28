@@ -1,5 +1,5 @@
 import api from "@/lib/axios";
-import type { IFinancialAccount } from "@/types/financial-account.types";
+import type { FinancialAccountSummary, IFinancialAccount } from "@/types/financial-account.types";
 import type {
   CreateFinancialAccountInput,
   UpdateFinancialAccountInput,
@@ -72,6 +72,20 @@ export async function createFinancialAccount(
     body: JSON.stringify(payload),
   });
 }
+
+interface FinancialAccountSummaryResponse {
+  success?: boolean;
+  message?: string;
+  data: FinancialAccountSummary;
+}
+
+export async function getFinancialAccountSummary(): Promise<FinancialAccountSummaryResponse> {
+  return request<FinancialAccountSummaryResponse>(`${BASE_URL}/summary`);
+}
+
+
+
+
 
 export async function updateFinancialAccount(
   id: string,

@@ -54,7 +54,8 @@ export type PageAccess =
   | "courier-settings"
   | "financial"
   | "expense"
-  | "expenseCategory";
+  | "expenseCategory"
+  | "fundTransfer";
 
 export interface Page {
   id: PageAccess;
@@ -214,6 +215,21 @@ export const availablePages: Page[] = [
   {
     id: "courier-settings",
     label: "Courier Settings",
+    icon: <Settings className="h-4 w-4" />,
+  },
+  {
+    id: "financial",
+    label: "Financial",
+    icon: <FileText className="h-4 w-4" />,
+  },
+  {
+    id: "expense",
+    label: "Expense",
+    icon: <FileText className="h-4 w-4" />,
+  },
+  {
+    id: "expenseCategory",
+    label: "Expense Category",
     icon: <Settings className="h-4 w-4" />,
   },
 ];

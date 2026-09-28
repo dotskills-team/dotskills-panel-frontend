@@ -9,18 +9,28 @@ export const createFinancialAccountSchema = z.object({
     AccountType.MOBILE_BANKING,
     AccountType.OTHER,
   ]),
+  // providerName: z
+  //   .enum([
+  //     ProviderName.BKASH,
+  //     ProviderName.NAGAD,
+  //     ProviderName.ROCKET,
+  //     ProviderName.OTHER,
+  //   ])
+  //   .optional(),
   providerName: z
-    .enum([
-      ProviderName.BKASH,
-      ProviderName.NAGAD,
-      ProviderName.ROCKET,
-      ProviderName.OTHER,
-    ])
-    .optional(),
+  .enum([
+    ProviderName.BKASH,
+    ProviderName.NAGAD,
+    ProviderName.ROCKET,
+    ProviderName.OTHER,
+  ])
+  .nullable()
+  .optional(),
   accountNumber: z.string().optional(),
   accountHolderName: z.string().optional(),
   bankName: z.string().optional(),
   branchName: z.string().optional(),
+  ownerId: z.string().nullable().optional(),
   openingBalance: z.coerce.number().min(0).default(0),
   currency: z.string().default("BDT"),
   description: z.string().trim().max(500).optional(),

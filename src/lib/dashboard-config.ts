@@ -10,7 +10,7 @@ export interface NavItem {
   id: PageAccess;
   label: string;
   href: string;
-  icon?: string; 
+  icon?: string;
   badge?: string;
   description?: string;
 }
@@ -71,24 +71,29 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
     },
 
     {
-      label: "Overview",
-    collapsible: true,
+      label: "Accounts",
+      collapsible: true,
 
       items: [
         {
           id: "expenseCategory",
-          label: "expense-category",
+          label: "Expense-category",
           href: "/dashboard/expense-category",
         },
         {
           id: "expense",
-          label: "expenses",
+          label: "Expenses",
           href: "/dashboard/expenses",
         },
         {
           id: "financial",
-          label: "financial-account",
+          label: "Financial-account",
           href: "/dashboard/financial-account",
+        },
+        {
+          id: "fundTransfer",
+          label: "Fund Transfer",
+          href: "/dashboard/fund-transfer",
         },
       ],
     },
@@ -181,7 +186,7 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
           href: "/dashboard/admin/users",
           description: "Manage team members",
         },
-         {
+        {
           id: "team-salary",
           label: "Team Salary",
           href: "/dashboard/team-salary",
@@ -197,7 +202,7 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
           label: "Products",
           href: "/dashboard/product-management",
         },
-       {
+        {
           id: "clients-management",
           label: "Clients",
           href: "/dashboard/admin/clients",
@@ -225,7 +230,7 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
           label: "Leads",
           href: "/dashboard/leads",
         },
-         {
+        {
           id: "team-salary",
           label: "Team Salary",
           href: "/dashboard/team-salary",
@@ -236,7 +241,7 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
           label: "Orders",
           href: "/dashboard/orders-management",
         },
-         {
+        {
           id: "clients-management",
           label: "Clients",
           href: "/dashboard/clients",
@@ -287,13 +292,13 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
           label: "Leads",
           href: "/dashboard/leads",
         },
-         {
+        {
           id: "team-salary",
           label: "Team Salary",
           href: "/dashboard/team-salary",
           description: "Manage salary of team members",
         },
-         {
+        {
           id: "clients-management",
           label: "Clients",
           href: "/dashboard/clients",
@@ -325,13 +330,13 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
           label: "Leads",
           href: "/dashboard/leads",
         },
-         {
+        {
           id: "team-salary",
           label: "Team Salary",
           href: "/dashboard/team-salary",
           description: "Manage salary of team members",
         },
-         {
+        {
           id: "clients-management",
           label: "Clients",
           href: "/dashboard/clients",
