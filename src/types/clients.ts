@@ -1,3 +1,4 @@
+import { IProject } from "./project.types";
 import type { User } from "./user.types";
 
 export enum ClientStatus {
@@ -88,6 +89,8 @@ export interface IClient {
 
   technologies?: string[];
   services?: string[];
+
+  projects?: IProject[];
 
   status: ClientStatus;
 

@@ -9,6 +9,7 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
+  ExternalLink,
   FolderKanban,
   Globe,
   Mail,
@@ -17,6 +18,7 @@ import {
   StickyNote,
   Upload,
   Users,
+  Wallet,
 } from "lucide-react";
 
 import {
@@ -35,7 +37,6 @@ import {
   formatCurrency,
   formatNumber,
   getClientFullName,
-  getProjectCompletionPercentage,
 } from "@/features/clients/utils/client.utils";
 
 import { ClientAvatar } from "./client-avatar";
@@ -56,6 +57,106 @@ interface ClientDetailsSheetProps {
   /** Optional — footer "Add Note" button only renders when provided. */
   onAddNote?: (client: IClient) => void;
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Project types (shape returned by the backend `projects` array)            */
+/* -------------------------------------------------------------------------- */
+
+interface ProjectUser {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email?: string;
+  designation?: string;
+}
+
+interface ClientProject {
+  _id: string;
+  name: string;
+  type: string;
+  status: string;
+  paymentStatus?: string;
+  budget?: number;
+  startDate?: string;
+  endDate?: string;
+  technologies?: string[];
+  liveUrl?: string;
+  projectManager?: ProjectUser | null;
+  developers?: ProjectUser[];
+  payments?: { amount: number }[];
+}
+
+const COMPLETED_STATUSES = ["COMPLETED", "DELIVERED", "DONE_DUE"];
+const ACTIVE_STATUSES = ["IN_PROGRESS"];
+
+const PROJECT_STATUS_STYLES: Record<string, string> = {
+  PLANNING: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+  IN_PROGRESS:
+    "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  ON_HOLD:
+    "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+  COMPLETED:
+    "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  DELIVERED:
+    "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  DONE_DUE:
+    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  CANCELLED: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  PENDING:
+    "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+};
+
+const PAYMENT_STATUS_STYLES: Record<string, string> = {
+  DUE: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  PARTIAL:
+    "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  ADVANCED: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  COMPLETE:
+    "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+};
+
+const labelize = (value?: string) =>
+  value
+    ? value
+        .toLowerCase()
+        .split("_")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ")
+    : "—";
+
+const getProjectPaid = (project: ClientProject) =>
+  (project.payments ?? []).reduce((sum, p) => sum + (p.amount ?? 0), 0);
+
+const getProjectDue = (project: ClientProject) =>
+  Math.max((project.budget ?? 0) - getProjectPaid(project), 0);
+
+function buildProjectStats(projects: ClientProject[]) {
+  const total = projects.length;
+  const completed = projects.filter((p) =>
+    COMPLETED_STATUSES.includes(p.status),
+  ).length;
+  const active = projects.filter((p) =>
+    ACTIVE_STATUSES.includes(p.status),
+  ).length;
+  const totalBudget = projects.reduce((sum, p) => sum + (p.budget ?? 0), 0);
+  const totalPaid = projects.reduce((sum, p) => sum + getProjectPaid(p), 0);
+  const totalDue = projects.reduce((sum, p) => sum + getProjectDue(p), 0);
+  const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  return {
+    total,
+    completed,
+    active,
+    totalBudget,
+    totalPaid,
+    totalDue,
+    completionRate,
+  };
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Activity                                                                  */
+/* -------------------------------------------------------------------------- */
 
 type ActivityEntry =
   | { type: "note"; date: string; actor?: string; text: string }
@@ -161,6 +262,147 @@ function ActivityRow({ entry }: { entry: ActivityEntry }) {
   );
 }
 
+/* -------------------------------------------------------------------------- */
+/*  Project card                                                              */
+/* -------------------------------------------------------------------------- */
+
+function ProjectCard({ project }: { project: ClientProject }) {
+  const paid = getProjectPaid(project);
+  const due = getProjectDue(project);
+  const manager = project.projectManager
+    ? `${project.projectManager.firstName} ${project.projectManager.lastName}`
+    : "Unassigned";
+
+  return (
+    <Card className="rounded-2xl border-border/70 shadow-sm">
+      <CardContent className="space-y-4 p-4">
+        {/* Title + badges */}
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <h4 className="truncate text-sm font-semibold text-foreground">
+                {project.name}
+              </h4>
+              {project.liveUrl && (
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary"
+                  aria-label={`Open ${project.name}`}
+                >
+                  <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                </a>
+              )}
+            </div>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {labelize(project.type)}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Badge
+              variant="secondary"
+              className={cn(
+                "rounded-md border-0 font-medium",
+                PROJECT_STATUS_STYLES[project.status],
+              )}
+            >
+              {labelize(project.status)}
+            </Badge>
+            {project.paymentStatus && (
+              <Badge
+                variant="secondary"
+                className={cn(
+                  "rounded-md border-0 font-medium",
+                  PAYMENT_STATUS_STYLES[project.paymentStatus],
+                )}
+              >
+                {labelize(project.paymentStatus)}
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        {/* Money */}
+        <div className="grid grid-cols-3 gap-2">
+          <StatPill label="Budget" value={formatCurrency(project.budget ?? 0)} />
+          <StatPill
+            label="Paid"
+            value={formatCurrency(paid)}
+            valueClassName="text-emerald-600 dark:text-emerald-400"
+          />
+          <StatPill
+            label="Due"
+            value={formatCurrency(due)}
+            valueClassName={
+              due > 0 ? "text-red-600 dark:text-red-400" : undefined
+            }
+          />
+        </div>
+
+        {/* Meta */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <AboutItem icon={Users} label="Project Manager" value={manager} />
+          <AboutItem
+            icon={Calendar}
+            label="Timeline"
+            value={
+              project.startDate
+                ? `${format(new Date(project.startDate), "MMM dd, yyyy")}${
+                    project.endDate
+                      ? ` → ${format(new Date(project.endDate), "MMM dd, yyyy")}`
+                      : ""
+                  }`
+                : "—"
+            }
+          />
+        </div>
+
+        {/* Developers */}
+        {(project.developers?.length ?? 0) > 0 && (
+          <div>
+            <p className="mb-1.5 text-xs text-muted-foreground">Developers</p>
+            <div className="flex flex-wrap gap-1.5">
+              {project.developers!.map((dev) => (
+                <Badge
+                  key={dev._id}
+                  variant="outline"
+                  className="rounded-md font-normal"
+                >
+                  {dev.firstName} {dev.lastName}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Technologies */}
+        {(project.technologies?.length ?? 0) > 0 && (
+          <div>
+            <p className="mb-1.5 text-xs text-muted-foreground">Technologies</p>
+            <div className="flex flex-wrap gap-1.5">
+              {project.technologies!.map((tech) => (
+                <Badge
+                  key={tech}
+                  variant="secondary"
+                  className="rounded-md font-normal"
+                >
+                  {tech}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Sheet                                                                     */
+/* -------------------------------------------------------------------------- */
+
 export function ClientDetailsSheet({
   client,
   open,
@@ -169,6 +411,13 @@ export function ClientDetailsSheet({
   onAddNote,
 }: ClientDetailsSheetProps) {
   const activity = useMemo(() => buildActivityFeed(client), [client]);
+
+  const projects = useMemo(
+    () => ((client as any).projects ?? []) as ClientProject[],
+    [client],
+  );
+  const projectStats = useMemo(() => buildProjectStats(projects), [projects]);
+
   const location = [client.city, client.state, client.country]
     .filter(Boolean)
     .join(", ");
@@ -227,7 +476,10 @@ export function ClientDetailsSheet({
               {[
                 { value: "overview", label: "Overview" },
                 { value: "details", label: "Details" },
-                { value: "projects", label: "Projects" },
+                {
+                  value: "projects",
+                  label: `Projects (${projectStats.total})`,
+                },
                 {
                   value: "notes",
                   label: `Notes (${client.notes?.length ?? 0})`,
@@ -337,20 +589,24 @@ export function ClientDetailsSheet({
                       Projects Summary
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="grid grid-cols-3 gap-3">
+                  <CardContent className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                     <StatPill
                       label="Total Projects"
-                      value={formatNumber(client.totalProjects)}
+                      value={formatNumber(projectStats.total)}
                     />
                     <StatPill
                       label="Completed"
-                      value={formatNumber(client.completedProjects)}
+                      value={formatNumber(projectStats.completed)}
                       valueClassName="text-emerald-600 dark:text-emerald-400"
                     />
                     <StatPill
                       label="In Progress"
-                      value={formatNumber(client.activeProjects)}
+                      value={formatNumber(projectStats.active)}
                       valueClassName="text-amber-600 dark:text-amber-400"
+                    />
+                    <StatPill
+                      label="Total Budget"
+                      value={formatCurrency(projectStats.totalBudget)}
                     />
                   </CardContent>
                 </Card>
@@ -498,7 +754,7 @@ export function ClientDetailsSheet({
                         Total Projects
                       </span>
                       <span className="text-base font-semibold text-foreground">
-                        {client.totalProjects}
+                        {formatNumber(projectStats.total)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -507,7 +763,7 @@ export function ClientDetailsSheet({
                         Active Projects
                       </span>
                       <span className="text-base font-semibold text-foreground">
-                        {client.activeProjects}
+                        {formatNumber(projectStats.active)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -516,15 +772,56 @@ export function ClientDetailsSheet({
                         Completion Rate
                       </span>
                       <span className="text-base font-semibold text-foreground">
-                        {getProjectCompletionPercentage(client)}%
+                        {projectStats.completionRate}%
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Wallet className="h-4 w-4" aria-hidden="true" />
+                        Total Budget
+                      </span>
+                      <span className="text-base font-semibold text-foreground">
+                        {formatCurrency(projectStats.totalBudget)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">
+                        Paid / Due
+                      </span>
+                      <span className="text-base font-semibold">
+                        <span className="text-emerald-600 dark:text-emerald-400">
+                          {formatCurrency(projectStats.totalPaid)}
+                        </span>
+                        <span className="mx-1.5 text-muted-foreground">/</span>
+                        <span
+                          className={
+                            projectStats.totalDue > 0
+                              ? "text-red-600 dark:text-red-400"
+                              : "text-foreground"
+                          }
+                        >
+                          {formatCurrency(projectStats.totalDue)}
+                        </span>
                       </span>
                     </div>
                   </CardContent>
                 </Card>
-                <p className="text-center text-xs text-muted-foreground">
-                  A detailed project list isn&apos;t wired up yet — this view
-                  reflects the aggregate counts on the client record.
-                </p>
+
+                {projects.length === 0 ? (
+                  <Card className="rounded-2xl border-border/70 shadow-sm">
+                    <CardContent className="py-8 text-center">
+                      <p className="text-sm text-muted-foreground">
+                        No projects yet
+                      </p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="space-y-3">
+                    {projects.map((project) => (
+                      <ProjectCard key={project._id} project={project} />
+                    ))}
+                  </div>
+                )}
               </TabsContent>
 
               {/* Notes */}

@@ -72,6 +72,8 @@ export function getClientsTableColumns(
       header: "Client",
       cell: ({ row }) => {
         const client = row.original;
+        console.log("row", client.projects);
+
         return (
           <div className="flex items-center gap-3">
             <ClientAvatar client={client} size="sm" />
@@ -121,48 +123,27 @@ export function getClientsTableColumns(
       )
       }
     },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => (
-        <ClientStatusBadge status={row.original.status} />
-      ),
-    },
-    {
-      accessorKey: "clientType",
-      header: "Type",
-      cell: ({ row }) => (
-        <ClientTypeBadge type={row.original.clientType} />
-      ),
-    },
-    {
+        {
       accessorKey: "totalProjects",
       header: "Projects",
       cell: ({ row }) => (
         <div className="text-sm font-medium">
-          {row.original.totalProjects}
+          {row.original.projects?.length ?? 0}
         </div>
       ),
     },
     {
-      accessorKey: "budget",
+      id: "budget",
       header: "Budget",
-      cell: ({ row }) => (
-        <div className="text-sm font-medium">
-          {formatCurrency(row.original.budget)}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "accountManager",
-      header: "Manager",
       cell: ({ row }) => {
-        const manager = row.original.accountManager;
+        const totalBudget = (row.original.projects ?? []).reduce(
+          (sum, project) => sum + (project.budget ?? 0),
+          0,
+        );
+
         return (
-          <div className="text-sm">
-            {manager
-              ? `${manager.firstName} ${manager.lastName}`
-              : "-"}
+          <div className="text-sm font-medium">
+            {formatCurrency(totalBudget)}
           </div>
         );
       },
