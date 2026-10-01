@@ -123,12 +123,14 @@ export function ProjectDetailsDialog({
   const statusConfig = PROJECT_STATUS_CONFIG[project.status];
   const paymentStatus = project.paymentStatus;
   const totalPaid = (project.payments ?? [])
-  .filter((p) => p.status === "COMPLETE")
-  .reduce((sum, p) => sum + (p.amount || 0), 0);
+    .filter((p) => p.status === "COMPLETE")
+    .reduce((sum, p) => sum + (p.amount || 0), 0);
   const amountDue =
     project.budget !== undefined && project.budget !== null
       ? Math.max(project.budget - totalPaid, 0)
       : undefined;
+
+  console.log(project)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -143,13 +145,13 @@ export function ProjectDetailsDialog({
                 <DialogTitle className="text-xl font-semibold text-white dark">
                   {project.name}
                 </DialogTitle>
-                
+
                 <span className="text-sm text-indigo-100">
                   {getUserFullName(project.client)}
                 </span>
                 <span className="text-sm text-indigo-100">
                   {project.client?.phone}
-                  
+
                 </span>
               </div>
               <div className="flex shrink-0 flex-col items-end gap-2">
@@ -180,9 +182,8 @@ export function ProjectDetailsDialog({
               <InfoItem
                 icon={CalendarDays}
                 label="Timeline"
-                value={`${formatDate(project.startDate)} — ${
-                  project.endDate ? formatDate(project.endDate) : "Ongoing"
-                }`}
+                value={`${formatDate(project.startDate)} — ${project.endDate ? formatDate(project.endDate) : "Ongoing"
+                  }`}
               />
             </section>
 
@@ -354,6 +355,14 @@ export function ProjectDetailsDialog({
                               <span className="font-medium">{formatCurrency(payment.amount)}</span>
                               <span className="text-xs text-muted-foreground">
                                 {formatDate(payment.date)}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-muted-foreground">
+                                {typeof payment.financialAccountId === "object" &&
+                                  payment.financialAccountId
+                                  ? payment.financialAccountId.accountName as any
+                                  : "No account"}
                               </span>
                             </div>
                             <div className="flex items-center gap-2">

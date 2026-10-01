@@ -27,6 +27,29 @@ export enum ProjectType {
   DIGITAL_MARKETING = "DIGITAL_MARKETING",
   OTHER = "OTHER",
 }
+export interface FinancialAccount {
+  _id: string;
+  accountName: string;
+  accountType: string;
+  providerName?: string | null;
+  accountNumber?: string;
+  accountHolderName?: string;
+  ownerId?: string;
+  bankName?: string;
+  branchName?: string;
+  openingBalance?: number;
+  currentBalance?: number;
+  currency?: string;
+  description?: string;
+  status?: string;
+  createdBy?: string;
+  updatedBy?: string | null;
+  deletedBy?: string | null;
+  deletedAt?: string | null;
+  isDeleted?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 export enum PaymentStatus {
   DUE = "DUE",
@@ -59,8 +82,7 @@ export interface IPayment {
   date: string;
   status: PaymentStatus;
   note?: string;
-  financialAccountId?: string; 
-
+  financialAccountId?: string | FinancialAccount | null;
 }
 
 export interface IProjectDocument {
