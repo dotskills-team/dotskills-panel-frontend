@@ -28,6 +28,7 @@ import { useAuthStore } from "@/stores";
 import { useRouter } from "next/navigation";
 
 import { SidebarNavItems } from "./SidebarNavItems";
+import Image from "next/image";
 
 type PremiumSidebarProps = React.ComponentProps<typeof Sidebar> & {
   onSearchClick?: () => void;
@@ -116,15 +117,20 @@ export function PremiumSidebar({
         <Link
           href="/dashboard"
           onClick={handleLinkClick}
-          className="flex items-center gap-2.5 rounded-lg px-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          className="flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
         >
-          <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-indigo-500 to-indigo-700 shadow-[0_2px_10px_-2px_rgba(79,70,229,0.55)]">
-            <span className="absolute left-1.75 top-1.75 h-1.5 w-1.5 rounded-full bg-white/90" />
-            <span className="absolute bottom-1.75 right-1.75 h-1.5 w-1.5 rounded-full bg-white/50" />
-            <span className="text-[13px] font-semibold text-white">D</span>
-          </span>
+<div className="flex h-20 items-center pl-0 pr-6">
+  <Image
+    src="/assets/dotskills-logo-sidebar-black.png"
+    alt="DotSkills Panel"
+    width={180}
+    height={45}
+    priority
+    className="h-12 w-auto select-none object-contain dark:invert"
+  />
+</div>
 
-          {!isCollapsed && (
+          {/* {!isCollapsed && (
             <div className="flex flex-col leading-none">
               <span className="text-sm font-semibold tracking-tight text-sidebar-foreground">
                 DotSkills
@@ -133,7 +139,7 @@ export function PremiumSidebar({
                 Panel
               </span>
             </div>
-          )}
+          )} */}
         </Link>
 
         {isCollapsed ? (
