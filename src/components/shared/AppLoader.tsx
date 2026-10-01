@@ -51,15 +51,15 @@ export default function AppLoader({
           {/* Soft glow ring behind logo */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 rounded-full bg-slate-500/20 blur-xl animate-loader-pulse-glow"
+            className="absolute inset-0 rounded-full bg-slate-500/80 blur-xl animate-loader-pulse-glow"
           />
           <Image
-            src="/assets/DotSkills Panel.png"
+            src="/assets/dotskills-logo-loading-black.jpg"
             alt="DotSkills Panel"
-            width={196}
-            height={196}
+            width={300}
+            height={300}
             priority
-            className="relative h-20 w-20 select-none object-contain sm:h-24 sm:w-24 animate-loader-breathe will-change-transform"
+            className="relative rounded-full h-30 w-30 select-none object-contain sm:h-24 sm:w-24 animate-loader-breathe will-change-transform"
           />
         </div>
 
