@@ -119,13 +119,23 @@ const projectToFormValues = (project: IProject): CreateProjectFormValues => ({
     })) ?? [],
     status: project.status,
     paymentStatus: project.paymentStatus ?? PaymentStatus.DUE,
+    // payments: project.payments?.map((p) => ({
+    //     amount: p.amount,
+    //     date: p.date?.slice(0, 10) ?? "",
+    //     status: p.status,
+    //     note: p.note ?? "",
+    //     financialAccountId: p.financialAccountId ?? "", //new
+
+    // })) ?? [],
     payments: project.payments?.map((p) => ({
         amount: p.amount,
         date: p.date?.slice(0, 10) ?? "",
         status: p.status,
         note: p.note ?? "",
-        financialAccountId: p.financialAccountId ?? "", //new
-
+        financialAccountId:
+            typeof p.financialAccountId === "object" && p.financialAccountId
+                ? p.financialAccountId._id
+                : p.financialAccountId ?? "",
     })) ?? [],
     paymentSchedule: project.paymentSchedule?.map((installment) => ({
         installmentNo: installment.installmentNo,
@@ -163,8 +173,8 @@ export function ProjectFormDialog({ mode, project, open, onOpenChange }: Project
     const { createProject, updateProject } = useProjectMutations();
     const { mutateAsync: sendInvoiceMutation } = useSendInvoice();
     const { data: usersResponse } = useAssignableUsers();
-    const { data: clients } = useClients();
-
+    const limit = 500;
+    const { data: clients } = useClients({ limit });
 
     const { data: accountsData } = useFinancialAccounts({ status: "ACTIVE" as never, limit: 100 });
     const accounts = accountsData?.data ?? [];
@@ -313,10 +323,10 @@ export function ProjectFormDialog({ mode, project, open, onOpenChange }: Project
     //     financialAccountId: p.financialAccountId ?? "", // ⬅️ নতুন
     // })) ?? [],
 
-      
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl overflow-y-auto bg-gray-100 dark:bg-slate-950">
+            <DialogContent className="max-w-4xl w-full overflow-y-auto bg-gray-100 dark:bg-slate-950">
                 <DialogHeader>
                     <DialogTitle>{mode === "create" ? "Add Project" : "Edit Project"}</DialogTitle>
                 </DialogHeader>
@@ -599,7 +609,7 @@ export function ProjectFormDialog({ mode, project, open, onOpenChange }: Project
                                             date: "",
                                             status: PaymentStatus.DUE,
                                             note: "",
-                                            financialAccountId: "", 
+                                            financialAccountId: "",
 
                                         })
                                     }
@@ -619,7 +629,7 @@ export function ProjectFormDialog({ mode, project, open, onOpenChange }: Project
                                 {paymentsArray.fields.map((field, index) => (
                                     <div
                                         key={field.id}
-                                        className="grid grid-cols-1 gap-2 rounded-md border bg-background p-3 sm:grid-cols-[1fr_1fr_1fr_1fr_auto]"
+                                        className="grid grid-cols-2 gap-2 rounded-md border bg-background p-3 sm:grid-cols-[1fr_1fr_auto]"
                                     >
                                         <Field label="Amount ($)">
                                             <Input
