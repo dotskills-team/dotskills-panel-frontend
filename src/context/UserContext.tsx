@@ -8,7 +8,7 @@ import { logoutUser } from "@/utils/logoutUser";
 type User = {
   _id: string;
   email: string;
-  role: "CUSTOMER" | "MODERATOR" | "MANAGER" | "ADMIN";
+  role: "CUSTOMER" | "MODERATOR" | "MANAGER" | "ADMIN" | "SUPER_ADMIN";
 };
 
 type UserContextType = {

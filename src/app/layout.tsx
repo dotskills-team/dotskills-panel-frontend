@@ -8,6 +8,7 @@ import AppBootstrap from "@/components/shared/AppBootstrap";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import { UserProvider } from "@/context/UserContext";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -104,10 +105,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
     >
       <body className="min-h-screen bg-background font-sans antialiased">
         <AppProvider>
-          <AppBootstrap> <Toaster richColors position="top-right" />
-            <ThemeProvider>
-              <TooltipProvider>{children}</TooltipProvider>
-            </ThemeProvider></AppBootstrap>
+          <UserProvider >
+
+            <AppBootstrap> <Toaster richColors position="top-right" />
+              <ThemeProvider>
+                <TooltipProvider>{children}</TooltipProvider>
+              </ThemeProvider></AppBootstrap>
+          </UserProvider>
         </AppProvider>
       </body>
     </html>

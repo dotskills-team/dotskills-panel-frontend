@@ -1,4 +1,4 @@
-// src/features/projects/components/projects-trash-table.tsx
+
 "use client";
 
 import { useMemo, useState } from "react";
@@ -33,6 +33,8 @@ interface ProjectsTrashTableProps {
   selection: RowSelectionState;
   onSelectionChange: (selection: RowSelectionState) => void;
   onRestore: (project: IProject) => void;
+  onPermanentDelete: (project: IProject) => void;
+  canPermanentDelete?: boolean;
 }
 
 export function ProjectsTrashTable({
@@ -45,10 +47,20 @@ export function ProjectsTrashTable({
   selection,
   onSelectionChange,
   onRestore,
+  onPermanentDelete,
+  canPermanentDelete = true,
 }: ProjectsTrashTableProps) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
-  const columns = useMemo(() => getProjectTrashTableColumns({ onRestore }), [onRestore]);
+  const columns = useMemo(
+    () =>
+      getProjectTrashTableColumns({
+        onRestore,
+        onPermanentDelete,
+        canPermanentDelete,
+      }),
+    [onRestore, onPermanentDelete, canPermanentDelete],
+  );
 
   const table = useReactTable({
     data: projects,
@@ -86,12 +98,13 @@ export function ProjectsTrashTable({
                 >
                   {headerGroup.headers.map((header) => (
                     <TableHead key={header.id} style={{ width: header.getSize() }}>
-                      {header.isPlaceholder ? null : (
+                      {header.isPlaceholder ? null : typeof header.column.columnDef.header ===
+                        "string" ? (
                         <span className="text-xs font-medium uppercase">
-                          {typeof header.column.columnDef.header === "string"
-                            ? header.column.columnDef.header
-                            : null}
+                          {header.column.columnDef.header}
                         </span>
+                      ) : (
+                        flexRender(header.column.columnDef.header, header.getContext())
                       )}
                     </TableHead>
                   ))}

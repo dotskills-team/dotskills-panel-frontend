@@ -1,4 +1,4 @@
-// src/features/projects/components/projects-trash-page-client.tsx
+
 "use client";
 
 import { useMemo, useState } from "react";
@@ -15,14 +15,17 @@ import { useDeletedProjects, useProjectFilters, useProjectMutations } from "@/fe
 import { ProjectsTrashBulkActionsBar } from "./ProjectTrashBulkActionbar";
 import { ProjectsTrashTable } from "./ProjectTrashTable";
 import { ProjectsPagination } from "./ProjectPagination";
+import { useUser } from "@/context/UserContext";
 
 export function ProjectsTrashPageClient() {
   const { filters, queryFilters, setSearchTerm, setPage, setLimit, activeFilterCount } =
     useProjectFilters();
 
+  const { user } = useUser();
+  const canPermanentDelete = user?.role === "SUPER_ADMIN";
+
   const { data, isLoading, isError, error, refetch } = useDeletedProjects(queryFilters);
-  const { restoreProject } = useProjectMutations();
-  console.log("Deleted projects data:", data);
+  const { restoreProject, permanentDeleteProject } = useProjectMutations();
   const projects = data?.data ?? [];
   const meta = data?.meta;
 
@@ -34,6 +37,8 @@ export function ProjectsTrashPageClient() {
 
   const [bulkRestoreOpen, setBulkRestoreOpen] = useState(false);
   const [isBulkRestoring, setIsBulkRestoring] = useState(false);
+
+  const [deleteTarget, setDeleteTarget] = useState<IProject | null>(null);
 
   const [search, setSearch] = useState(filters.searchTerm ?? "");
 
@@ -50,7 +55,8 @@ export function ProjectsTrashPageClient() {
         toast.success("Project restored successfully.");
         setRestoreOpen(false);
       },
-      onError: () => toast.error("Failed to restore project."),
+      onError: (err) =>
+        toast.error(err instanceof Error ? err.message : "Failed to restore project."),
     });
   };
 
@@ -68,6 +74,23 @@ export function ProjectsTrashPageClient() {
     }
   };
 
+  const confirmPermanentDelete = async () => {
+    if (!deleteTarget) return;
+
+    try {
+      await permanentDeleteProject.mutateAsync(deleteTarget._id);
+      toast.success("Project permanently deleted.");
+
+      setRowSelection((prev) => {
+        const { [deleteTarget._id]: _removed, ...rest } = prev;
+        return rest;
+      });
+      setDeleteTarget(null);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Unable to delete project.");
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
@@ -80,7 +103,8 @@ export function ProjectsTrashPageClient() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Project Trash</h1>
           <p className="text-sm text-muted-foreground">
-            Restore projects that were moved to trash.
+            Restore projects that were moved to trash
+            {canPermanentDelete ? ", or delete them permanently." : "."}
           </p>
         </div>
       </div>
@@ -116,6 +140,8 @@ export function ProjectsTrashPageClient() {
           selection={rowSelection}
           onSelectionChange={setRowSelection}
           onRestore={handleRestore}
+          onPermanentDelete={setDeleteTarget}
+          canPermanentDelete={canPermanentDelete}
         />
 
         {meta && projects.length > 0 && (
@@ -150,6 +176,17 @@ export function ProjectsTrashPageClient() {
         confirmText="Restore"
         isLoading={isBulkRestoring}
         onConfirm={handleBulkRestore}
+      />
+
+      <ConfirmDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete permanently?"
+        description={`"${deleteTarget?.name ?? ""}" will be deleted forever. This cannot be undone.`}
+        confirmText="Delete permanently"
+        variant="destructive"
+        isLoading={permanentDeleteProject.isPending}
+        onConfirm={confirmPermanentDelete}
       />
     </div>
   );

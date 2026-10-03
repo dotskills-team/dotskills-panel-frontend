@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { FundTransferFormDialog } from "./fund-transfer-form-dialog";
+import { useFinancialPayments } from "@/features/financial-account/hooks/use-financial-account";
 
 const money = (value?: number) =>
     new Intl.NumberFormat("en-BD", { style: "currency", currency: "BDT" }).format(value ?? 0);
@@ -41,6 +42,11 @@ export function FundTransferPageClient() {
 
     const list = useFundTransfers({ page, limit, sort: "-transferDate" });
     const deleteMutation = useDeleteFundTransfer();
+
+    const { data, isLoading } = useFinancialPayments({
+    });
+
+    console.log("Financial Payments Data:", data);
 
     const rows = list.data?.data ?? [];
     const meta = list.data?.meta;
