@@ -95,6 +95,11 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
           label: "Fund Transfer",
           href: "/dashboard/fund-transfer",
         },
+        {
+          id: "payments",
+          label: "Payments",
+          href: "/dashboard/payments",
+        }
       ],
     },
     {

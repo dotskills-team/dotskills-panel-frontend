@@ -55,7 +55,8 @@ export type PageAccess =
   | "financial"
   | "expense"
   | "expenseCategory"
-  | "fundTransfer";
+  | "fundTransfer"
+  | "payments";
 
 export interface Page {
   id: PageAccess;
