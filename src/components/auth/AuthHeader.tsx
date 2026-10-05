@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface AuthHeaderProps {
   className?: string;
@@ -19,7 +20,7 @@ export function AuthHeader({ className, variant = "default" }: AuthHeaderProps) 
         className,
       )}
     >
-      <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-[0_2px_10px_-2px_rgba(79,70,229,0.55)]">
+      {/* <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-[0_2px_10px_-2px_rgba(79,70,229,0.55)]">
         <span className="absolute left-[7px] top-[7px] h-1.5 w-1.5 rounded-full bg-white/90" />
         <span className="absolute bottom-[7px] right-[7px] h-1.5 w-1.5 rounded-full bg-white/50" />
         <span className="text-[13px] font-semibold text-white">D</span>
@@ -42,7 +43,15 @@ export function AuthHeader({ className, variant = "default" }: AuthHeaderProps) 
         >
           Panel
         </span>
-      </span>
+      </span> */}
+      <Image
+        src="/assets/dotskills-logo-loading.png"
+        alt="DotSkills Panel"
+        width={300}
+        height={300}
+        priority
+        className="relative rounded-full h-40 w-40 select-none object-contain sm:h-24 sm:w-24 animate-loader-breathe will-change-transform"
+      />
     </Link>
   );
 }
