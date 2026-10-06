@@ -13,6 +13,7 @@ import {
   DollarSign,
   Briefcase,
   ArrowUpRight,
+  Banknote,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { IClientStats } from "@/types/clients";
@@ -39,7 +40,7 @@ const stats: {
     format: formatNumber,
   },
   {
-    icon: DollarSign,
+    icon: Banknote ,
     label: "Total Revenue",
     key: "totalRevenue",
     color: "from-amber-500 to-amber-600",

@@ -61,7 +61,7 @@ export function DashboardOverviewClient() {
       iconColor: "text-emerald-600 dark:text-emerald-400",
       chartColor: "#059669",
       chartData: generateSparklineData(),
-      prefix: "$",
+      prefix: "৳",
       suffix: "",
     },
     {

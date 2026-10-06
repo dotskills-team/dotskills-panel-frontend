@@ -32,7 +32,7 @@ export function DashboardOverview() {
   const stats = [
     {
       title: "Total Revenue",
-      value: "$12,543",
+      value: "12,543",
       icon: <TrendingUp className="h-6 w-6" />,
       trend: { value: 12.5, direction: "up" as const },
       variant: "success" as const,
