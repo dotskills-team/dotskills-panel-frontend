@@ -95,7 +95,7 @@ export function ProjectsTrashPageClient() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <Button variant="ghost" size="sm" className="w-fit gap-2 text-muted-foreground" asChild>
-          <Link href="/dashboard/projects">
+          <Link href="/dashboard/project">
             <ArrowLeft className="h-4 w-4" />
             Back to Projects
           </Link>
