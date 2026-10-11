@@ -27,6 +27,7 @@ import {
   createSalaryPaymentSchema,
   generateMonthlySalarySchema,
 } from "@/features/team-salary/schemas/team-salary.schema";
+import { useFinancialAccounts } from "@/features/financial-account/hooks/use-financial-account";
 import {
   getSalaryEmployee,
   TEAM_SALARY_MONTH_OPTIONS,
@@ -330,6 +331,141 @@ function SalaryDetails({
   );
 }
 
+// function PaymentDialog({
+//   salary,
+//   open,
+//   onOpenChange,
+// }: {
+//   salary: ITeamSalary | null;
+//   open: boolean;
+//   onOpenChange: (open: boolean) => void;
+// }) {
+//   const mutation = useCreateSalaryPayment();
+//   const [form, setForm] = useState({
+//     amount: "",
+//     paymentMethod: "BANK",
+//     paymentDate: new Date().toISOString().slice(0, 10),
+//     paymentReference: "",
+//     note: "",
+//   });
+//   const submit = async (event: React.FormEvent) => {
+//     event.preventDefault();
+//     if (!salary) return;
+//     const amount = Number(form.amount);
+//     if (amount > salary.dueAmount) {
+//       toast.error(
+//         `Payment cannot exceed the due amount of ${money(salary.dueAmount)}.`,
+//       );
+//       return;
+//     }
+//     const parsed = createSalaryPaymentSchema.safeParse({ ...form, amount });
+//     if (!parsed.success) {
+//       toast.error(
+//         parsed.error.issues[0]?.message ?? "Please check the payment details.",
+//       );
+//       return;
+//     }
+//     try {
+//       await mutation.mutateAsync({ id: salary._id, payload: parsed.data });
+//       toast.success("Payment recorded successfully.");
+//       onOpenChange(false);
+//     } catch (error) {
+//       toast.error(
+//         error instanceof Error ? error.message : "Failed to record payment.",
+//       );
+//     }
+//   };
+//   return (
+//     <Dialog open={open} onOpenChange={onOpenChange}>
+//       <DialogContent>
+//         <DialogHeader>
+//           <DialogTitle>Add Payment</DialogTitle>
+//           <DialogDescription>
+//             Record a payment for{" "}
+//             {salary ? getSalaryEmployeeName(salary) : "this employee"}. Due:{" "}
+//             {money(salary?.dueAmount)}
+//           </DialogDescription>
+//         </DialogHeader>
+//         <form onSubmit={submit} className="flex flex-col gap-4">
+//           <div className="grid gap-4 sm:grid-cols-2">
+//             <label className="grid gap-2 text-sm font-medium">
+//               Amount
+//               <Input
+//                 type="number"
+//                 min="1"
+//                 max={salary?.dueAmount}
+//                 value={form.amount}
+//                 onChange={(e) => setForm({ ...form, amount: e.target.value })}
+//                 required
+//               />
+//             </label>
+//             <label className="grid gap-2 text-sm font-medium">
+//               Payment method
+//               <Select
+//                 value={form.paymentMethod}
+//                 onValueChange={(value) =>
+//                   setForm({ ...form, paymentMethod: value })
+//                 }
+//               >
+//                 <SelectTrigger>
+//                   <SelectValue />
+//                 </SelectTrigger>
+//                 <SelectContent>
+//                   {TEAM_SALARY_PAYMENT_METHOD_OPTIONS.map((option) => (
+//                     <SelectItem key={option.value} value={option.value}>
+//                       {option.label}
+//                     </SelectItem>
+//                   ))}
+//                 </SelectContent>
+//               </Select>
+//             </label>
+//           </div>
+//           <label className="grid gap-2 text-sm font-medium">
+//             Payment date
+//             <Input
+//               type="date"
+//               value={form.paymentDate}
+//               onChange={(e) =>
+//                 setForm({ ...form, paymentDate: e.target.value })
+//               }
+//               required
+//             />
+//           </label>
+//           <label className="grid gap-2 text-sm font-medium">
+//             Reference
+//             <Input
+//               value={form.paymentReference}
+//               onChange={(e) =>
+//                 setForm({ ...form, paymentReference: e.target.value })
+//               }
+//               placeholder="Transaction reference"
+//             />
+//           </label>
+//           <label className="grid gap-2 text-sm font-medium">
+//             Note
+//             <Textarea
+//               value={form.note}
+//               onChange={(e) => setForm({ ...form, note: e.target.value })}
+//               placeholder="Optional note"
+//             />
+//           </label>
+//           <DialogFooter>
+//             <Button
+//               type="button"
+//               variant="outline"
+//               onClick={() => onOpenChange(false)}
+//             >
+//               Cancel
+//             </Button>
+//             <Button type="submit" disabled={mutation.isPending} className="cursor-pointer text-white bg-indigo-600 transition hover:scale-[1.02] hover:bg-indigo-500">
+//               {mutation.isPending ? "Recording..." : "Record Payment"}
+//             </Button>
+//           </DialogFooter>
+//         </form>
+//       </DialogContent>
+//     </Dialog>
+//   );
+// }
 function PaymentDialog({
   salary,
   open,
@@ -340,16 +476,25 @@ function PaymentDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const mutation = useCreateSalaryPayment();
+  const accountsQuery = useFinancialAccounts(
+    { limit: 100, status: "ACTIVE" } as any,
+    { enabled: open },
+  );
+  const accounts = accountsQuery.data?.data ?? [];
+
   const [form, setForm] = useState({
     amount: "",
+    financialAccountId: "",
     paymentMethod: "BANK",
     paymentDate: new Date().toISOString().slice(0, 10),
     paymentReference: "",
     note: "",
   });
+
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!salary) return;
+
     const amount = Number(form.amount);
     if (amount > salary.dueAmount) {
       toast.error(
@@ -357,6 +502,17 @@ function PaymentDialog({
       );
       return;
     }
+
+    const selectedAccount = accounts.find(
+      (a) => a._id === form.financialAccountId,
+    );
+    if (selectedAccount && amount > selectedAccount.currentBalance) {
+      toast.error(
+        `Selected account has only ${money(selectedAccount.currentBalance)}.`,
+      );
+      return;
+    }
+
     const parsed = createSalaryPaymentSchema.safeParse({ ...form, amount });
     if (!parsed.success) {
       toast.error(
@@ -364,9 +520,11 @@ function PaymentDialog({
       );
       return;
     }
+
     try {
       await mutation.mutateAsync({ id: salary._id, payload: parsed.data });
       toast.success("Payment recorded successfully.");
+      setForm((f) => ({ ...f, amount: "", paymentReference: "", note: "" }));
       onOpenChange(false);
     } catch (error) {
       toast.error(
@@ -374,6 +532,7 @@ function PaymentDialog({
       );
     }
   };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -386,6 +545,31 @@ function PaymentDialog({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-4">
+          <label className="grid gap-2 text-sm font-medium">
+            Pay from account
+            <Select
+              value={form.financialAccountId}
+              onValueChange={(value) =>
+                setForm({ ...form, financialAccountId: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={
+                    accountsQuery.isLoading ? "Loading..." : "Select account"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {accounts.map((account) => (
+                  <SelectItem key={account._id} value={account._id}>
+                    {account.accountName} ({money(account.currentBalance)})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </label>
+
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-medium">
               Amount
@@ -456,7 +640,11 @@ function PaymentDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={mutation.isPending} className="cursor-pointer text-white bg-indigo-600 transition hover:scale-[1.02] hover:bg-indigo-500">
+            <Button
+              type="submit"
+              disabled={mutation.isPending}
+              className="cursor-pointer text-white bg-indigo-600 transition hover:scale-[1.02] hover:bg-indigo-500"
+            >
               {mutation.isPending ? "Recording..." : "Record Payment"}
             </Button>
           </DialogFooter>
@@ -465,7 +653,6 @@ function PaymentDialog({
     </Dialog>
   );
 }
-
 function GenerateDialog({
   month,
   year,
@@ -925,25 +1112,48 @@ export function TeamSalaryPageClient() {
                               </AlertDialogTrigger>
                               <AlertDialogContent>
                                 <AlertDialogHeader>
-                                  <AlertDialogTitle>
+                                  {/* <AlertDialogTitle>
                                     Move salary record to trash?
                                   </AlertDialogTitle>
                                   <AlertDialogDescription>
                                     This will remove this payroll record from
                                     the active salary list. You can restore it
                                     from Trash if needed.
+                                  </AlertDialogDescription> */}
+                                  <AlertDialogTitle>Delete salary record?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This will permanently delete this payroll record. Any paid
+                                    amount will be refunded to the account it was paid from.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                   <AlertDialogCancel>
                                     Keep Record
                                   </AlertDialogCancel>
-                                  <AlertDialogAction
+                                  {/* <AlertDialogAction
                                     variant="destructive"
                                     onClick={moveToTrash}
                                     className="hover:cursor-pointer"
                                   >
                                     Move to Trash
+                                  </AlertDialogAction> */}
+                                  <AlertDialogAction
+                                    variant="destructive"
+                                    onClick={async () => {
+                                      try {
+                                        await trashMutation.mutateAsync({ id: salary._id });
+                                        toast.success("Salary record deleted.");
+                                      } catch (error) {
+                                        toast.error(
+                                          error instanceof Error
+                                            ? error.message
+                                            : "Unable to delete salary record.",
+                                        );
+                                      }
+                                    }}
+                                    className="hover:cursor-pointer"
+                                  >
+                                    Delete
                                   </AlertDialogAction>
                                 </AlertDialogFooter>
                               </AlertDialogContent>

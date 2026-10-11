@@ -11,6 +11,8 @@ export interface ISalaryPayment {
   _id?: string;
   amount: number;
   paymentMethod: string;
+      financialAccountId?: string | { _id: string; accountName: string };
+
   paymentDate: string;
   paymentReference?: string;
   note?: string;
@@ -92,6 +94,7 @@ export interface CreateTeamSalaryPayload {
 
 export interface CreateSalaryPaymentPayload {
   amount: number;
+    financialAccountId: string;
   paymentMethod: string;
   paymentDate: string;
   paymentReference?: string;
