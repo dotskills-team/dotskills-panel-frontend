@@ -22,7 +22,7 @@ import {
 } from "@/features/financial-account/constants/financial-account.constant";
 import type { IFinancialAccount } from "@/types/financial-account.types";
 import { cn } from "@/lib/utils";
-
+import { AccountTransactions } from "./account-transactions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -287,6 +287,7 @@ export function FinancialAccountDetailsSheet({
                   <Row label="Created">{formatDateTime(account.createdAt)}</Row>
                   <Row label="Last Updated">{formatDateTime(account.updatedAt)}</Row>
                 </Section>
+                                <AccountTransactions accountId={account._id} />
               </div>
             </div>
 

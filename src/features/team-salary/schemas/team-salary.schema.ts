@@ -52,7 +52,9 @@ export const createSalaryPaymentSchema = z.object({
   amount: z
     .number()
     .positive("Payment amount must be greater than zero."),
-
+  financialAccountId: z
+    .string()
+    .min(1, "Please select an account."),
   paymentMethod: z
     .string()
     .min(1, "Payment method is required."),
