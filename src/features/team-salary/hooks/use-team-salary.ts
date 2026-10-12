@@ -152,6 +152,8 @@ export function useCreateSalaryPayment() {
       queryClient.invalidateQueries({
         queryKey: teamSalaryKeys.all,
       });
+      queryClient.invalidateQueries({ queryKey: ["financial-accounts"] });
+queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 }
@@ -166,6 +168,8 @@ export function useMoveTeamSalaryToTrash() {
       queryClient.invalidateQueries({
         queryKey: teamSalaryKeys.detail(variables.id),
       });
+      queryClient.invalidateQueries({ queryKey: ["financial-accounts"] });
+queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 }

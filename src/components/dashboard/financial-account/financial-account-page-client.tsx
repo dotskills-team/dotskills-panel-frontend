@@ -52,7 +52,10 @@ import {
 
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { FinancialAccountFormDialog } from "./financial-account-form-dialog";
-
+import { ArrowLeftRight, HandCoins } from "lucide-react";
+import { AddMoneyDialog } from "./add-money-dialog";
+import { TransferDialog } from "./transfer-dialog";
+import { LoansSection } from "./loans-section";
 /* -------------------------------------------------------------------------- */
 /*                                  Helpers                                   */
 /* -------------------------------------------------------------------------- */
@@ -258,6 +261,8 @@ export function FinancialAccountPageClient() {
   const [limit, setLimit] = useState(10);
 
   const [formOpen, setFormOpen] = useState(false);
+    const [addMoneyOpen, setAddMoneyOpen] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(false);
   const [editing, setEditing] = useState<IFinancialAccount | null>(null);
   const [deleteTarget, setDeleteTarget] =
     useState<IFinancialAccount | null>(null);
@@ -349,7 +354,8 @@ export function FinancialAccountPageClient() {
         onOpenChange={setFormOpen}
         existing={editing}
       />
-
+      <AddMoneyDialog open={addMoneyOpen} onOpenChange={setAddMoneyOpen} />
+      <TransferDialog open={transferOpen} onOpenChange={setTransferOpen} />
       <ConfirmDialog
         open={Boolean(deleteTarget)}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
@@ -381,13 +387,38 @@ export function FinancialAccountPageClient() {
           </p>
         </div>
 
-        <Button
+        {/* <Button
           className="w-full cursor-pointer bg-indigo-600 text-white transition-all hover:scale-[1.02] hover:bg-indigo-500 sm:w-auto"
           onClick={openCreate}
         >
           <Plus />
           Add Account
-        </Button>
+        </Button> */}
+                <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            className="cursor-pointer"
+            onClick={() => setTransferOpen(true)}
+          >
+            <ArrowLeftRight />
+            Transfer
+          </Button>
+          <Button
+            variant="outline"
+            className="cursor-pointer"
+            onClick={() => setAddMoneyOpen(true)}
+          >
+            <HandCoins />
+            Add Money
+          </Button>
+          <Button
+            className="cursor-pointer bg-indigo-600 text-white transition-all hover:scale-[1.02] hover:bg-indigo-500"
+            onClick={openCreate}
+          >
+            <Plus />
+            Add Account
+          </Button>
+        </div>
       </div>
 
       {/* ------------------------------------------------------------------ */}
@@ -424,8 +455,8 @@ export function FinancialAccountPageClient() {
 
         <StatCard
           title="Total Opening Balance"
-          value={money(totalBalance)}
-          caption="Opening balance on this page"
+                   value={money(stats?.totalOpeningBalance)}
+          caption="Opening balance across accounts"
           icon={Banknote}
           className="bg-gradient-to-br from-cyan-500 to-blue-600 shadow-cyan-500/20"
           iconClassName="text-cyan-100"
@@ -465,7 +496,7 @@ export function FinancialAccountPageClient() {
           </div>
         </div>
       )}
-
+      <LoansSection />
       {/* ------------------------------------------------------------------ */}
       {/*                              Filters                               */}
       {/* ------------------------------------------------------------------ */}

@@ -91,6 +91,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { SalaryFormDialog } from "./salary-form-dialog";
+import { useFinancialAccounts } from "@/features/financial-account/hooks/use-financial-account";
 
 const years = Array.from(
   { length: 5 },
@@ -340,16 +341,25 @@ function PaymentDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const mutation = useCreateSalaryPayment();
+  const accountsQuery = useFinancialAccounts(
+    { limit: 100, status: "ACTIVE" } as any,
+    { enabled: open },
+  );
+  const accounts = accountsQuery.data?.data ?? [];
+
   const [form, setForm] = useState({
     amount: "",
+    financialAccountId: "",
     paymentMethod: "BANK",
     paymentDate: new Date().toISOString().slice(0, 10),
     paymentReference: "",
     note: "",
   });
+
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!salary) return;
+
     const amount = Number(form.amount);
     if (amount > salary.dueAmount) {
       toast.error(
@@ -357,6 +367,17 @@ function PaymentDialog({
       );
       return;
     }
+
+    const selectedAccount = accounts.find(
+      (a) => a._id === form.financialAccountId,
+    );
+    if (selectedAccount && amount > selectedAccount.currentBalance) {
+      toast.error(
+        `Selected account has only ${money(selectedAccount.currentBalance)}.`,
+      );
+      return;
+    }
+
     const parsed = createSalaryPaymentSchema.safeParse({ ...form, amount });
     if (!parsed.success) {
       toast.error(
@@ -364,9 +385,11 @@ function PaymentDialog({
       );
       return;
     }
+
     try {
       await mutation.mutateAsync({ id: salary._id, payload: parsed.data });
       toast.success("Payment recorded successfully.");
+      setForm((f) => ({ ...f, amount: "", paymentReference: "", note: "" }));
       onOpenChange(false);
     } catch (error) {
       toast.error(
@@ -374,6 +397,7 @@ function PaymentDialog({
       );
     }
   };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -386,6 +410,31 @@ function PaymentDialog({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={submit} className="flex flex-col gap-4">
+          <label className="grid gap-2 text-sm font-medium">
+            Pay from account
+            <Select
+              value={form.financialAccountId}
+              onValueChange={(value) =>
+                setForm({ ...form, financialAccountId: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={
+                    accountsQuery.isLoading ? "Loading..." : "Select account"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {accounts.map((account) => (
+                  <SelectItem key={account._id} value={account._id}>
+                    {account.accountName} ({money(account.currentBalance)})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </label>
+
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-medium">
               Amount
@@ -456,7 +505,11 @@ function PaymentDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={mutation.isPending} className="cursor-pointer text-white bg-indigo-600 transition hover:scale-[1.02] hover:bg-indigo-500">
+            <Button
+              type="submit"
+              disabled={mutation.isPending}
+              className="cursor-pointer text-white bg-indigo-600 transition hover:scale-[1.02] hover:bg-indigo-500"
+            >
               {mutation.isPending ? "Recording..." : "Record Payment"}
             </Button>
           </DialogFooter>

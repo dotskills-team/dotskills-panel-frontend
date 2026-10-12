@@ -32,7 +32,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-
+import { AccountTransactions } from "./account-transactions";
 interface FinancialAccountDetailsSheetProps {
   account: IFinancialAccount | null;
   open: boolean;
@@ -287,6 +287,7 @@ export function FinancialAccountDetailsSheet({
                   <Row label="Created">{formatDateTime(account.createdAt)}</Row>
                   <Row label="Last Updated">{formatDateTime(account.updatedAt)}</Row>
                 </Section>
+                                <AccountTransactions accountId={account._id} />
               </div>
             </div>
 

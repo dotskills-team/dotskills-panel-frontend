@@ -83,3 +83,48 @@ export interface FinancialAccountSummary {
     "_id" | "accountName" | "accountType" | "openingBalance" | "currentBalance"
   >[];
 }
+
+export type TransactionType =
+  | "DEPOSIT"
+  | "LOAN_RECEIVED"
+  | "LOAN_REPAYMENT"
+  | "TRANSFER_IN"
+  | "TRANSFER_OUT"
+  | "SALARY"
+  | "EXPENSE"
+  | "PROJECT_PAYMENT";
+
+export interface ITransaction {
+  _id: string;
+  accountId: { _id: string; accountName: string; accountType: string } | string;
+  direction: "IN" | "OUT";
+  type: TransactionType;
+  amount: number;
+  balanceAfter: number;
+  date: string;
+  note?: string;
+  isReversal: boolean;
+  createdAt: string;
+}
+
+export interface ILoan {
+  _id: string;
+  lenderName: string;
+  lenderPhone?: string;
+  principalAmount: number;
+  repaidAmount: number;
+  dueAmount: number;
+  receivedAccountId: { _id: string; accountName: string } | string;
+  receivedDate: string;
+  dueDate?: string | null;
+  status: "ACTIVE" | "PAID";
+  note?: string;
+  createdAt: string;
+}
+
+export interface LoanSummary {
+  totalBorrowed: number;
+  totalRepaid: number;
+  totalDue: number;
+  activeCount: number;
+}
