@@ -128,10 +128,116 @@ function StatCard({
 /*                          Account Balance Card                              */
 /* -------------------------------------------------------------------------- */
 
-function AccountBalanceCard({
+
+
+interface BrandColor {
+  keywords: string[];
+  from: string;
+  to: string;
+}
+
+const BRAND_COLORS: BrandColor[] = [
+  // Mobile banking
+  { keywords: ["bkash", "bikash"], from: "#E2136E", to: "#A50B50" },
+  { keywords: ["nagad"], from: "#F7941D", to: "#D9480F" },
+  { keywords: ["rocket"], from: "#8C3494", to: "#5B1F63" },
+  { keywords: ["upay"], from: "#00A859", to: "#007A41" },
+  { keywords: ["tap"], from: "#E4002B", to: "#A30020" },
+
+  // Banks
+  { keywords: ["dutch-bangla", "dutch bangla", "dbbl"], from: "#1B9E48", to: "#0F6B30" },
+  { keywords: ["islami bank", "ibbl"], from: "#0A8F4D", to: "#066B38" },
+  { keywords: ["brac"], from: "#0072BC", to: "#004E83" },
+  { keywords: ["city bank", "city"], from: "#E31E24", to: "#A8141A" },
+  { keywords: ["eastern bank", "ebl"], from: "#0B6E4F", to: "#07503A" },
+  { keywords: ["prime bank", "prime"], from: "#C8102E", to: "#8F0B20" },
+  { keywords: ["dhaka bank"], from: "#00833E", to: "#005C2B" },
+  { keywords: ["mutual trust", "mtb"], from: "#E4002B", to: "#A30020" },
+  { keywords: ["standard chartered", "scb"], from: "#0473EA", to: "#0A3F8F" },
+  { keywords: ["hsbc"], from: "#DB0011", to: "#9C000C" },
+  { keywords: ["sonali"], from: "#0B7A3E", to: "#075A2D" },
+  { keywords: ["janata"], from: "#00693E", to: "#004A2B" },
+  { keywords: ["agrani"], from: "#00875A", to: "#005F40" },
+  { keywords: ["rupali"], from: "#0066B3", to: "#004A82" },
+  { keywords: ["pubali"], from: "#00A651", to: "#007A3B" },
+  { keywords: ["uttara"], from: "#0072CE", to: "#00518F" },
+  { keywords: ["ific"], from: "#F58220", to: "#C2610F" },
+  { keywords: ["trust bank"], from: "#E31837", to: "#A3102A" },
+  { keywords: ["bank asia"], from: "#E5202E", to: "#A81620" },
+  { keywords: ["southeast", "south east"], from: "#00A0DF", to: "#0070A0" },
+  { keywords: ["united commercial", "ucb"], from: "#E31937", to: "#A3112A" },
+  { keywords: ["al-arafah", "al arafah"], from: "#0F8B4C", to: "#0A6636" },
+  { keywords: ["shahjalal"], from: "#00923F", to: "#006A2D" },
+  { keywords: ["one bank"], from: "#E4002B", to: "#A30020" },
+  { keywords: ["ab bank"], from: "#E31E24", to: "#A8141A" },
+  { keywords: ["jamuna"], from: "#0072BC", to: "#004E83" },
+  { keywords: ["premier"], from: "#E31837", to: "#A3102A" },
+  { keywords: ["mercantile"], from: "#00923F", to: "#006A2D" },
+
+  // Generic
+  { keywords: ["cash", "petty"], from: "#10B981", to: "#047857" },
+  { keywords: ["paypal"], from: "#0070BA", to: "#003087" },
+  { keywords: ["payoneer"], from: "#FF4800", to: "#C23600" },
+  { keywords: ["wise"], from: "#37517E", to: "#1F2E4A" },
+  { keywords: ["stripe"], from: "#635BFF", to: "#3D35C7" },
+];
+
+function findBrand(text: string): BrandColor | undefined {
+  const t = text.toLowerCase();
+  return BRAND_COLORS.find((b) => b.keywords.some((k) => t.includes(k)));
+}
+
+/* ------------------------------------------------------------------ */
+/* Fallback: brand na pele unique hue                                  */
+/* ------------------------------------------------------------------ */
+
+function hashString(value: string) {
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+function getFallbackColors(seed: number) {
+  const hue = Math.round((seed * 137.508) % 360);
+  const hue2 = (hue + 35) % 360;
+  return {
+    from: `hsl(${hue} 78% 50%)`,
+    to: `hsl(${hue2} 82% 38%)`,
+    glow: `hsl(${hue} 80% 45% / 0.55)`,
+  };
+}
+
+function getCardColors(account: IFinancialAccount, seed: number) {
+  // bankName field thakle oita, na thakle accountName
+  const bankName = (account as { bankName?: string }).bankName ?? "";
+  const brand = findBrand(`${bankName} ${account.accountName}`);
+
+  if (brand) {
+    return {
+      background: `linear-gradient(135deg, ${brand.from}, ${brand.to})`,
+      shadow: `0 10px 25px -8px ${brand.from}99`,
+    };
+  }
+
+  const f = getFallbackColors(seed);
+  return {
+    background: `linear-gradient(135deg, ${f.from}, ${f.to})`,
+    shadow: `0 10px 25px -8px ${f.glow}`,
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* Card                                                                */
+/* ------------------------------------------------------------------ */
+
+export function AccountBalanceCard({
   account,
+  index,
 }: {
   account: IFinancialAccount;
+  index?: number;
 }) {
   const accountType =
     ACCOUNT_TYPE_OPTIONS.find(
@@ -140,15 +246,10 @@ function AccountBalanceCard({
 
   const type = String(account.accountType).toUpperCase();
 
+  // Icon account type onujayi
   let Icon = Wallet;
-  let cardClass =
-    "from-blue-600 to-indigo-600 shadow-blue-500/10";
-  let iconClass = "text-blue-100";
-
   if (type.includes("BANK")) {
     Icon = Building2;
-    cardClass = "from-indigo-600 to-violet-600 shadow-indigo-500/10";
-    iconClass = "text-indigo-100";
   } else if (
     type.includes("MOBILE") ||
     type.includes("BKASH") ||
@@ -156,49 +257,44 @@ function AccountBalanceCard({
     type.includes("ROCKET")
   ) {
     Icon = Smartphone;
-    cardClass = "from-cyan-500 to-blue-600 shadow-cyan-500/10";
-    iconClass = "text-cyan-100";
   } else if (type.includes("CASH")) {
     Icon = Banknote;
-    cardClass = "from-emerald-500 to-teal-600 shadow-emerald-500/10";
-    iconClass = "text-emerald-100";
-  } else if (
-    type.includes("CARD") ||
-    type.includes("CREDIT")
-  ) {
+  } else if (type.includes("CARD") || type.includes("CREDIT")) {
     Icon = CreditCard;
-    cardClass = "from-violet-600 to-fuchsia-600 shadow-violet-500/10";
-    iconClass = "text-violet-100";
   }
+
+  const seed =
+    typeof index === "number"
+      ? index
+      : hashString(String(account._id ?? account.accountName));
+
+  const colors = getCardColors(account, seed);
 
   return (
     <Card
+      style={{ background: colors.background, boxShadow: colors.shadow }}
       className={cn(
-        "group relative overflow-hidden rounded-2xl border-0",
-        "bg-gradient-to-br text-white shadow-lg",
+        "group relative overflow-hidden rounded-2xl border-0 text-white",
         "transition-all duration-300",
-        "hover:-translate-y-1 hover:shadow-xl",
-        cardClass,
+        "hover:-translate-y-1",
       )}
     >
       {/* Decorative shapes */}
       <div className="absolute -right-10 -top-10 size-32 rounded-full bg-white/10 transition-transform duration-500 group-hover:scale-125" />
-
-      <div className="absolute -bottom-14 -left-10 size-28 rounded-full bg-black/5" />
+      <div className="absolute -bottom-14 -left-10 size-28 rounded-full bg-black/10" />
 
       <CardContent className="relative p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
-              <Icon className={cn("size-5", iconClass)} />
+            <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+              <Icon className="size-5 text-white" />
             </div>
 
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">
                 {account.accountName}
               </p>
-
-              <p className="mt-0.5 truncate text-[11px] text-white/70">
+              <p className="mt-0.5 truncate text-[11px] text-white/75">
                 {accountType}
               </p>
             </div>
@@ -206,10 +302,8 @@ function AccountBalanceCard({
 
           <Badge
             className={cn(
-              "shrink-0 border-0 bg-white/15 text-[10px] text-white",
-              account.status === "ACTIVE"
-                ? "text-emerald-50"
-                : "text-white/70",
+              "shrink-0 border-0 bg-white/20 text-[10px] text-white hover:bg-white/20",
+              account.status === "ACTIVE" ? "text-white" : "text-white/70",
             )}
           >
             {account.status}
@@ -217,27 +311,26 @@ function AccountBalanceCard({
         </div>
 
         <div className="mt-5">
-          <p className="text-[11px] font-medium uppercase tracking-wider text-white/65">
+          <p className="text-[11px] font-medium uppercase tracking-wider text-white/70">
             Current Balance
           </p>
-
           <p className="mt-1 text-2xl font-bold tracking-tight sm:text-[26px]">
             {money(account.currentBalance)}
           </p>
         </div>
 
-        <div className="mt-4 flex items-center justify-between border-t border-white/15 pt-3">
+        <div className="mt-4 flex items-center justify-between border-t border-white/20 pt-3">
           <div className="min-w-0">
-            <p className="text-[10px] text-white/55">Opening Balance</p>
-            <p className="mt-0.5 text-xs font-medium text-white/85">
+            <p className="text-[10px] text-white/60">Opening Balance</p>
+            <p className="mt-0.5 text-xs font-medium text-white/90">
               {money(account.openingBalance)}
             </p>
           </div>
 
           {account.accountNumber && (
             <div className="min-w-0 text-right">
-              <p className="text-[10px] text-white/55">Account No.</p>
-              <p className="mt-0.5 max-w-28 truncate text-xs font-medium text-white/85">
+              <p className="text-[10px] text-white/60">Account No.</p>
+              <p className="mt-0.5 max-w-28 truncate text-xs font-medium text-white/90">
                 {account.accountNumber}
               </p>
             </div>
@@ -245,6 +338,28 @@ function AccountBalanceCard({
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Grid                                                                */
+/* ------------------------------------------------------------------ */
+
+export function AccountBalanceGrid({
+  accounts,
+}: {
+  accounts: IFinancialAccount[];
+}) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      {accounts.map((account, index) => (
+        <AccountBalanceCard
+          key={account._id}
+          account={account}
+          index={index}
+        />
+      ))}
+    </div>
   );
 }
 
