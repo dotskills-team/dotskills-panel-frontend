@@ -418,7 +418,7 @@ export function PremiumSidebar({
               ⌘K
             </kbd>
           </button>
-        )} */}
+        )} */} 
       </SidebarHeader>
 
       {/* Navigation */}
