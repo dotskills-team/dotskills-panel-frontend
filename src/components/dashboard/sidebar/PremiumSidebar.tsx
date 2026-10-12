@@ -380,7 +380,7 @@ export function PremiumSidebar({
           onClick={handleLinkClick}
           className="flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
         >
-          <div className="flex h-20 items-center pl-0 pr-6">
+          <div className="flex h-8 items-center pl-0 pr-6">
             <Image
               src="/assets/dotskills-logo-sidebar-black.png"
               alt="DotSkills Panel"
