@@ -17,6 +17,7 @@ import {
 
 import { PaymentStatus } from "@/types/project.types";
 import type { ProjectFilters } from "@/types/project.types";
+import type { IClient } from "@/types/clients";
 import {
   PROJECT_STATUS_OPTIONS,
   PROJECT_TYPE_OPTIONS,
@@ -24,6 +25,7 @@ import {
 
 interface ProjectsToolbarProps {
   filters: ProjectFilters;
+  clients?: IClient[];
   onSearchChange: (value: string) => void;
   onUpdateFilters: (patch: Partial<ProjectFilters>) => void;
   onAddProject: () => void;
@@ -38,8 +40,28 @@ const PAYMENT_STATUS_OPTIONS: { value: PaymentStatus; label: string }[] = [
   { value: PaymentStatus.COMPLETE, label: "Complete" },
 ];
 
+// Adjust to match the fields available on IClient
+const getClientLabel = (client: IClient): string => {
+  const c = client as IClient & {
+    fullName?: string;
+    name?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  };
+
+  return (
+    c.fullName ||
+    c.name ||
+    [c.firstName, c.lastName].filter(Boolean).join(" ") ||
+    c.email ||
+    "Unnamed client"
+  );
+};
+
 export function ProjectsToolbar({
   filters,
+  clients = [],
   onSearchChange,
   onUpdateFilters,
   onAddProject,
@@ -93,7 +115,7 @@ export function ProjectsToolbar({
         </div>
       </div>
 
-      {/* Row 2: search + status/type/payment filters */}
+      {/* Row 2: search + client/status/type/payment filters */}
       <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative w-full sm:max-w-sm">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -107,6 +129,27 @@ export function ProjectsToolbar({
             }}
           />
         </div>
+
+        <Select
+          value={filters.client ?? ALL}
+          onValueChange={(value) =>
+            onUpdateFilters({
+              client: value === ALL ? undefined : value,
+            })
+          }
+        >
+          <SelectTrigger className="w-full sm:w-48">
+            <SelectValue placeholder="Client" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL}>All Clients</SelectItem>
+            {clients.map((client) => (
+              <SelectItem key={client._id} value={client._id}>
+                {getClientLabel(client)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
         <Select
           value={filters.status ?? ALL}

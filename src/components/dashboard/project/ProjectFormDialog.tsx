@@ -214,7 +214,7 @@ export function ProjectFormDialog({ mode, project, open, onOpenChange }: Project
 
     const { totalPaid, amountDue } = useMemo(() => {
         const paid = (watchedPayments ?? [])
-            .filter((p) => p?.status === PaymentStatus.COMPLETE)
+            .filter((p) => p?.status === PaymentStatus.COMPLETE || p.status === PaymentStatus.ADVANCED)
             .reduce((sum, p) => {
                 const amount = Number(p?.amount);
                 return sum + (Number.isFinite(amount) ? amount : 0);

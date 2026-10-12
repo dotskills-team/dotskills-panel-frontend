@@ -17,6 +17,8 @@ import { ProjectsTable } from "./ProjectTable";
 import { ProjectsPagination } from "./ProjectPagination";
 import { ProjectFormDialog } from "./ProjectFormDialog";
 import { ProjectDetailsDialog } from "./ProjectDetailsDialog";
+import { useClients } from "@/features/clients/hooks";
+import { IClient } from "@/types/clients";
 
 export function ProjectsPageClient() {
   const {
@@ -36,6 +38,9 @@ export function ProjectsPageClient() {
 console.log("projects ", data?.stats);
   const projects = data?.data ?? [];
   const meta = data?.meta;
+
+   const { data: clientsResponse, isLoading: clientsLoading } = useClients({limit: 200000});
+    const clients: IClient[] = clientsResponse?.data ?? [];
 
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const selectedIds = useMemo(() => Object.keys(rowSelection), [rowSelection]);
@@ -115,6 +120,7 @@ const handleOpenDetails = useCallback((project: IProject) => {
           onSearchChange={setSearchTerm}
           onUpdateFilters={updateFilters}
           onAddProject={handleAddProject}
+          clients={clients}
         />
 
         <ProjectsBulkActionsBar
