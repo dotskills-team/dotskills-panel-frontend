@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState } from "react";
@@ -11,6 +12,7 @@ import {
   Receipt,
   Search,
   Trash,
+  X,
 } from "lucide-react";
 
 import { useDeleteExpense, useExpenses } from "@/features/expense/hooks/use-expense";
@@ -33,6 +35,7 @@ import {
 } from "@/components/ui/select";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { ExpenseFormDialog } from "./expense-form-dialog";
+import { formatDate } from "@/utils/dateFormat";
 
 const money = (value?: number) =>
   new Intl.NumberFormat("en-BD", { style: "currency", currency: "BDT" }).format(value ?? 0);
@@ -43,34 +46,6 @@ const nameOf = (value: unknown, key: string) => {
   return (value as Record<string, string>)[key] ?? "—";
 };
 
-// function StatCard({
-//   title,
-//   value,
-//   caption,
-//   icon: Icon,
-//   tone,
-// }: {
-//   title: string;
-//   value: string;
-//   caption: string;
-//   icon: typeof Receipt;
-//   tone: string;
-// }) {
-//   return (
-//     <Card className="rounded-xl border-0 bg-gray-100 dark:bg-slate-900 ease-in-out duration-500 transform hover:bg-slate-950 hover:scale-105 shadow-sm overflow-hidden transition-shadow hover:-translate-y-0.5 hover:shadow-md">
-//       <CardContent className="flex items-center gap-3 p-4">
-//         <div className={cn("flex size-11 shrink-0 items-center justify-center rounded-xl", tone)}>
-//           <Icon />
-//         </div>
-//         <div className="min-w-0">
-//           <p className="text-xs text-muted-foreground">{title}</p>
-//           <p className="mt-1 text-lg font-semibold tracking-tight">{value}</p>
-//           <p className="truncate text-xs text-muted-foreground">{caption}</p>
-//         </div>
-//       </CardContent>
-//     </Card>
-//   );
-// }
 function StatCard({
   title,
   value,
@@ -90,7 +65,7 @@ function StatCard({
     <Card
       className={cn(
         "group relative overflow-hidden rounded-2xl border-0",
-        "bg-gradient-to-br text-white shadow-lg",
+        "bg-linear-to-br text-white shadow-lg",
         "transition-all duration-300",
         "hover:-translate-y-1 hover:shadow-xl",
         gradient,
@@ -132,10 +107,13 @@ function StatCard({
     </Card>
   );
 }
+
 export function ExpensePageClient() {
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState("ALL");
   const [financialAccountId, setFinancialAccountId] = useState("ALL");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [sort, setSort] = useState("-expenseDate");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -154,9 +132,11 @@ export function ExpensePageClient() {
       searchTerm: search || undefined,
       categoryId: categoryId === "ALL" ? undefined : categoryId,
       financialAccountId: financialAccountId === "ALL" ? undefined : financialAccountId,
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
       sort,
     }),
-    [page, limit, search, categoryId, financialAccountId, sort],
+    [page, limit, search, categoryId, financialAccountId, startDate, endDate, sort],
   );
 
   const list = useExpenses(query);
@@ -165,6 +145,14 @@ export function ExpensePageClient() {
   const rows = list.data?.data ?? [];
   const meta = list.data?.meta;
   const totalAmount = rows.reduce((sum, row) => sum + row.amount, 0);
+
+  const hasDateFilter = Boolean(startDate || endDate);
+
+  const clearDates = () => {
+    setStartDate("");
+    setEndDate("");
+    setPage(1);
+  };
 
   const openCreate = () => {
     setEditing(null);
@@ -218,90 +206,140 @@ export function ExpensePageClient() {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-  <StatCard
-    title="Total Expenses"
-    value={String(meta?.total ?? rows.length)}
-    caption="All expense records"
-    icon={Receipt}
-    tone="text-blue-100"
-    gradient="from-blue-600 via-indigo-600 to-violet-600"
-  />
+        <StatCard
+          title="Total Expenses"
+          value={String(meta?.total ?? rows.length)}
+          caption="All expense records"
+          icon={Receipt}
+          tone="text-blue-100"
+          gradient="from-blue-600 via-indigo-600 to-violet-600"
+        />
 
-  <StatCard
-    title="Total Amount"
-    value={money(totalAmount)}
-    caption="Sum on this page"
-    icon={CircleDollarSign}
-    tone="text-rose-100"
-    gradient="from-rose-500 via-pink-600 to-fuchsia-600"
-  />
-</div>
+        <StatCard
+          title="Total Amount"
+          value={money(totalAmount)}
+          caption="Sum on this page"
+          icon={CircleDollarSign}
+          tone="text-rose-100"
+          gradient="from-rose-500 via-pink-600 to-fuchsia-600"
+        />
+      </div>
 
       <Card className="bg-slate-100 dark:bg-slate-950 p-0">
         <CardContent className="flex flex-col gap-4 p-0">
-          <div className="pt-5 pb-2 px-4 flex flex-col gap-3 lg:flex-row lg:items-center">
-            <div className="relative min-w-0 flex-1">
-              <Search className="absolute left-3 w-5 h-5 top-1.5 text-muted-foreground" />
-              <Input
-                className="pl-9 py-2"
-                placeholder="Search by description, reference..."
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
+          <div className="pt-5 pb-2 px-4 flex flex-col gap-3">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+              <div className="relative min-w-0 flex-1">
+                <Search className="absolute left-3 w-5 h-5 top-1.5 text-muted-foreground" />
+                <Input
+                  className="pl-9 py-2"
+                  placeholder="Search by description, reference..."
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                />
+              </div>
+              <Select
+                value={categoryId}
+                onValueChange={(value) => {
+                  setCategoryId(value);
                   setPage(1);
                 }}
-              />
+              >
+                <SelectTrigger className="w-full lg:w-40">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Categories</SelectItem>
+                  {categoriesQuery.data?.data.map((category) => (
+                    <SelectItem key={category._id} value={category._id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={financialAccountId}
+                onValueChange={(value) => {
+                  setFinancialAccountId(value);
+                  setPage(1);
+                }}
+              >
+                <SelectTrigger className="w-full lg:w-40">
+                  <SelectValue placeholder="Account" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Accounts</SelectItem>
+                  {accountsQuery.data?.data.map((account) => (
+                    <SelectItem key={account._id} value={account._id}>
+                      {account.accountName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={sort} onValueChange={setSort}>
+                <SelectTrigger className="w-full lg:w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {EXPENSE_SORT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {/* Date filter */}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="flex items-center gap-2">
+                  <label htmlFor="expense-start-date" className="text-xs font-medium text-muted-foreground">
+                    From
+                  </label>
+                  <Input
+                    id="expense-start-date"
+                    type="date"
+                    className="w-full sm:w-40"
+                    value={startDate}
+                    max={endDate || undefined}
+                    onChange={(e) => {
+                      setStartDate(e.target.value);
+                      setPage(1);
+                    }}
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label htmlFor="expense-end-date" className="text-xs font-medium text-muted-foreground">
+                    To
+                  </label>
+                  <Input
+                    id="expense-end-date"
+                    type="date"
+                    className="w-full sm:w-40"
+                    value={endDate}
+                    min={startDate || undefined}
+                    onChange={(e) => {
+                      setEndDate(e.target.value);
+                      setPage(1);
+                    }}
+                  />
+                </div>
+                {hasDateFilter && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-fit cursor-pointer"
+                    onClick={clearDates}
+                  >
+                    <X />
+                    Clear dates
+                  </Button>
+                )}
+              </div>
             </div>
-            <Select
-              value={categoryId}
-              onValueChange={(value) => {
-                setCategoryId(value);
-                setPage(1);
-              }}
-            >
-              <SelectTrigger className="w-full lg:w-40">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">All Categories</SelectItem>
-                {categoriesQuery.data?.data.map((category) => (
-                  <SelectItem key={category._id} value={category._id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select
-              value={financialAccountId}
-              onValueChange={(value) => {
-                setFinancialAccountId(value);
-                setPage(1);
-              }}
-            >
-              <SelectTrigger className="w-full lg:w-40">
-                <SelectValue placeholder="Account" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">All Accounts</SelectItem>
-                {accountsQuery.data?.data.map((account) => (
-                  <SelectItem key={account._id} value={account._id}>
-                    {account.accountName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={sort} onValueChange={setSort}>
-              <SelectTrigger className="w-full lg:w-44">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {EXPENSE_SORT_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+
+
           </div>
 
           {list.isError ? (
@@ -329,6 +367,9 @@ export function ExpensePageClient() {
                   setSearch("");
                   setCategoryId("ALL");
                   setFinancialAccountId("ALL");
+                  setStartDate("");
+                  setEndDate("");
+                  setPage(1);
                 }}
               >
                 Clear filters
@@ -351,7 +392,8 @@ export function ExpensePageClient() {
                   {rows.map((expense) => (
                     <tr key={expense._id} className="border-b last:border-0 hover:bg-muted/30">
                       <td className="p-3 text-muted-foreground">
-                        {new Date(expense.expenseDate).toLocaleDateString()}
+                        {/* {new Date(expense.expenseDate).toLocaleDateString()} */}
+                          {formatDate(expense.expenseDate)}
                       </td>
                       <td className="p-3">
                         <p className="font-medium">{expense.description || "—"}</p>
