@@ -20,6 +20,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { formatDate } from "@/utils/dateFormat";
 
 const ALL = "ALL";
 
@@ -241,7 +242,8 @@ export function PaymentsPageClient() {
                                     {rows.map((p) => (
                                         <tr key={p.paymentId} className="border-b last:border-0 hover:bg-muted/30">
                                             <td className="p-3 text-muted-foreground">
-                                                {new Date(p.date).toLocaleDateString()}
+                                                {/* {new Date(p.date).toLocaleDateString()} */}
+                                                  {formatDate(p.date)}
                                             </td>
                                             <td className="p-3 font-medium">
                                                 {p.project?.name ?? "—"}
