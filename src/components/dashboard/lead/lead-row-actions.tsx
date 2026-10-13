@@ -31,7 +31,7 @@ import { LEAD_STATUS_OPTIONS } from "@/features/leads/constants/lead.constant";
 interface LeadRowActionsProps {
   lead: ILead;
   onOpenDetails: (lead: ILead) => void;
-  onEdit: (lead: ILead) => void;
+  onEdit: (lead: ILead) => void; 
   onAssign: (lead: ILead) => void;
   onConvert: (lead: ILead) => void;
   onDelete: (lead: ILead) => void;

@@ -25,6 +25,8 @@ import {
   LEAD_SOURCE_OPTIONS,
   LEAD_STATUS_OPTIONS,
   LEAD_TYPE_OPTIONS,
+    NOTE_ACTIVITY_OPTIONS,
+
 } from "@/features/leads/constants/lead.constant";
 import type { LeadFilters } from "@/types/lead";
 import { LeadsMoreFiltersSheet } from "./leads-more-filters-sheet";
@@ -237,6 +239,30 @@ export function LeadsToolbar({
             ))}
           </SelectContent>
         </Select>
+
+        <Select
+  value={filters.noteAddedWithin ?? ALL}
+  onValueChange={(value) =>
+    onUpdateFilters({
+      noteAddedWithin:
+        value === ALL
+          ? undefined
+          : (value as LeadFilters["noteAddedWithin"]),
+    })
+  }
+>
+  <SelectTrigger className="w-full sm:w-40">
+    <SelectValue placeholder="Note Added" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value={ALL}>All (Note Date)</SelectItem>
+    {NOTE_ACTIVITY_OPTIONS.map((option) => (
+      <SelectItem key={option.value} value={option.value}>
+        {option.label}
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
       </div>
 
 

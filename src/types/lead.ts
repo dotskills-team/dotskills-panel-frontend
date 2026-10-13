@@ -261,6 +261,7 @@ export interface LeadFilters {
 
   "createdAt[gte]"?: string;
   "createdAt[lte]"?: string;
+  noteAddedWithin?: "today" | "3d" | "7d";
 
   dateType?: "created" | "updatedAt" | "nextContact";
   startDate?: string; // "YYYY-MM-DD"

@@ -141,6 +141,12 @@ export const LEAD_STATUS_CONFIG: Record<
   },
 };
 
+export const NOTE_ACTIVITY_OPTIONS = [
+  { value: "today", label: "Today" },
+  { value: "3d", label: "Last 3 Days" },
+  { value: "7d", label: "Last 7 Days" },
+] as const;
+
 export const LEAD_CONTACT_STATUS_OPTIONS = [
   {
     value: LeadContactStatus.NO_RESPONSE,

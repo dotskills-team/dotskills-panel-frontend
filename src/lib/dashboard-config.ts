@@ -2,8 +2,8 @@ import { UserRole, PageAccess } from "./permissions";
 
 export interface NavGroup {
   label: string;
-  icon?: string; // lucide icon নাম, যেমন "Wallet"
-  iconColor?: string; // Tailwind class, যেমন "text-emerald-600 dark:text-emerald-400"
+  icon?: string; 
+  iconColor?: string; 
   items: NavItem[];
   collapsible?: boolean;
 }
@@ -12,8 +12,8 @@ export interface NavItem {
   id: PageAccess;
   label: string;
   href: string;
-  icon?: string; // lucide icon নাম, যেমন "Receipt"
-  iconColor?: string; // Tailwind class
+  icon?: string; 
+  iconColor?: string; 
   badge?: string;
   description?: string;
 }

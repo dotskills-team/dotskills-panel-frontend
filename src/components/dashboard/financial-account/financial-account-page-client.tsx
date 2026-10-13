@@ -449,7 +449,7 @@ export function FinancialAccountPageClient() {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Unable to delete financial account.",
+          : "Unable to delete financial account",
       );
     }
   };

@@ -12,7 +12,7 @@ import {
   LEAD_STATUS_CONFIG,
   LEAD_TYPE_CONFIG,
 } from "@/features/leads/constants/lead.constant";
-import { formatDate, getInitials, getLeadFullName } from "@/features/leads/utils/lead.utils";
+import { formatDate, formatRelativeTime, getInitials, getLeadFullName } from "@/features/leads/utils/lead.utils";
 import { LeadRowActions } from "./lead-row-actions";
 import { ILead, LeadSource } from "@/types/lead";
 
@@ -192,6 +192,19 @@ export function getLeadsTableColumns({
       ),
     },
     {
+  id: "lastNote",
+  header: "Last Note",
+  cell: ({ row }) => {
+    const notes = row.original.notes ?? [];
+    const last = notes[notes.length - 1];
+    return (
+      <span className="text-sm text-muted-foreground">
+        {last?.createdAt ? formatRelativeTime(last.createdAt) : "—"}
+      </span>
+    );
+  },
+},
+    {
       id: "actions",
       header: "Actions",
       enableHiding: false,
@@ -209,5 +222,6 @@ export function getLeadsTableColumns({
         />
       ),
     },
+    
   ];
 }
