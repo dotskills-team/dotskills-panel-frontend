@@ -7,6 +7,7 @@ import type {
   GenerateMonthlySalaryInput,
   TeamSalaryQueryInput,
 } from "../schemas/team-salary.schema";
+import type { UpdateTeamSalaryInput } from "../schemas/team-salary.schema";
 
 import type {
   ITeamSalary,
@@ -180,4 +181,14 @@ export async function cancelTeamSalary(
       body: JSON.stringify(payload),
     },
   );
+}
+
+export async function updateTeamSalary(
+  id: string,
+  payload: UpdateTeamSalaryInput,
+): Promise<TeamSalaryResponse> {
+  return request<TeamSalaryResponse>(`${BASE_URL}/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
 }
