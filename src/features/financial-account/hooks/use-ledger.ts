@@ -2,18 +2,24 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  UpdateLoanPayload,
   createLoan,
   createTransfer,
+  deleteLoan,
   depositMoney,
   getLoanSummary,
   getLoans,
   getTransactions,
   repayLoan,
+  updateLoan,
   type CreateLoanPayload,
   type DepositPayload,
   type RepayLoanPayload,
   type TransferPayload,
 } from "../api/ledger.api";
+
+
+
 
 // ব্যালেন্স বদলালে এগুলো রিফ্রেশ হবে
 const useRefreshMoney = () => {
@@ -83,7 +89,34 @@ export function useTransfer() {
     mutationFn: (p: TransferPayload) => createTransfer(p),
     onSuccess: () => {
       refresh();
-      // fund-transfers এর নিজস্ব query থাকলে সেটাও রিফ্রেশ হবে
     },
   });
 }
+
+
+const useInvalidateLoanRelated = () => {
+  const qc = useQueryClient();
+  return () => {
+    qc.invalidateQueries({ queryKey: ["loans"] });
+    qc.invalidateQueries({ queryKey: ["loan-summary"] });
+    qc.invalidateQueries({ queryKey: ["financial-accounts"] });
+    qc.invalidateQueries({ queryKey: ["transactions"] });
+  };
+};
+
+export const useUpdateLoan = () => {
+  const invalidate = useInvalidateLoanRelated();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateLoanPayload }) =>
+      updateLoan(id, payload),
+    onSuccess: invalidate,
+  });
+};
+
+export const useDeleteLoan = () => {
+  const invalidate = useInvalidateLoanRelated();
+  return useMutation({
+    mutationFn: (id: string) => deleteLoan(id),
+    onSuccess: invalidate,
+  });
+};
