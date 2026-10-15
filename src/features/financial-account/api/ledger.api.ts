@@ -55,6 +55,16 @@ export interface TransferPayload {
   note?: string;
 }
 
+export interface UpdateLoanPayload {
+  lenderName?: string;
+  lenderPhone?: string;
+  amount?: number;
+  accountId?: string;
+  receivedDate?: string;
+  dueDate?: string | null;
+  note?: string;
+}
+
 export const depositMoney = async (payload: DepositPayload) =>
   (await api.post("/transactions/deposit", payload)).data;
 
@@ -75,3 +85,9 @@ export const getLoanSummary = async () =>
 
 export const createTransfer = async (payload: TransferPayload) =>
   (await api.post("/fund-transfers", payload)).data;
+
+export const updateLoan = async (id: string, payload: UpdateLoanPayload) =>
+  (await api.patch(`/loans/${id}`, payload)).data;
+
+export const deleteLoan = async (id: string) =>
+  (await api.delete(`/loans/${id}`)).data;

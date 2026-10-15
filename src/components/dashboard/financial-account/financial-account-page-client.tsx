@@ -546,7 +546,7 @@ export function FinancialAccountPageClient() {
           value={money(stats?.totalCurrentBalance)}
           caption="Current balance across accounts"
           icon={Wallet}
-          className="bg-gradient-to-br from-blue-600 to-indigo-600 shadow-blue-500/20"
+          className="bg-linear-to-br from-blue-600 to-indigo-600 shadow-blue-500/20"
           iconClassName="text-blue-100"
         />
 
@@ -555,7 +555,7 @@ export function FinancialAccountPageClient() {
           value={String(meta?.total ?? rows.length)}
           caption="All financial accounts"
           icon={WalletCards}
-          className="bg-gradient-to-br from-violet-600 to-purple-600 shadow-violet-500/20"
+          className="bg-linear-to-br from-violet-600 to-purple-600 shadow-violet-500/20"
           iconClassName="text-violet-100"
         />
 
@@ -564,7 +564,7 @@ export function FinancialAccountPageClient() {
           value={String(activeCount)}
           caption="Currently active accounts"
           icon={Landmark}
-          className="bg-gradient-to-br from-emerald-500 to-teal-600 shadow-emerald-500/20"
+          className="bg-linear-to-br from-emerald-500 to-teal-600 shadow-emerald-500/20"
           iconClassName="text-emerald-100"
         />
 
@@ -573,7 +573,7 @@ export function FinancialAccountPageClient() {
                    value={money(stats?.totalOpeningBalance)}
           caption="Opening balance across accounts"
           icon={Banknote}
-          className="bg-gradient-to-br from-cyan-500 to-blue-600 shadow-cyan-500/20"
+          className="bg-linear-to-br from-cyan-500 to-blue-600 shadow-cyan-500/20"
           iconClassName="text-cyan-100"
         />
 
@@ -751,7 +751,7 @@ export function FinancialAccountPageClient() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[760px] text-sm">
+              <table className="w-full min-w-190 text-sm">
                 <thead>
                   <tr className="border-b bg-indigo-600 text-left text-xs text-white">
                     <th className="p-3 font-medium">Account</th>
