@@ -47,6 +47,7 @@ import {
   getSalaryStatusConfig,
 } from "@/features/team-salary/utils/team-salary.utils";
 import {
+  getPaidBreakdown,
   getSalaryTotal,
   SalaryPaymentStatus,
   type ITeamSalary,
@@ -330,6 +331,11 @@ function SalaryDetails({
                         <p className="text-sm text-muted-foreground">
                           {getSalaryPaymentMethodLabel(payment.paymentMethod)}
                         </p>
+                        <p className="text-xs text-indigo-500">
+                          {payment.paymentFor === "EXTRA"
+                            ? (salary.extraName || "Extra")
+                            : "Base salary"}
+                        </p>
                         {payment.paymentReference && (
                           <p className="mt-1 text-xs text-muted-foreground">
                             Ref: {payment.paymentReference}
@@ -376,6 +382,7 @@ function PaymentDialog({
 
   const [form, setForm] = useState({
     amount: "",
+    paymentFor: "SALARY" as "SALARY" | "EXTRA",
     financialAccountId: "",
     paymentMethod: "BANK",
     paymentDate: new Date().toISOString().slice(0, 10),
@@ -385,13 +392,32 @@ function PaymentDialog({
   const [extraName, setExtraName] = useState("");
   const [extraAmount, setExtraAmount] = useState("");
 
+  const baseSalary = Number(salary?.salaryAmount ?? 0);
+  const paidAmount = Number(salary?.paidAmount ?? 0);
+  const { salaryPaid, extraPaid } = salary
+    ? getPaidBreakdown(salary)
+    : { salaryPaid: 0, extraPaid: 0 };
+
+  const newExtra = Number(extraAmount) || 0;
+  const newTotal = baseSalary + newExtra;
+  const newDue = Math.max(newTotal - paidAmount, 0);
+  const salaryDue = Math.max(baseSalary - salaryPaid, 0);
+  const extraDue = Math.max(newExtra - extraPaid, 0);
+  const componentDue = form.paymentFor === "EXTRA" ? extraDue : salaryDue;
+
+  // modal khulle / record change hole sync
   useEffect(() => {
     if (open && salary) {
+      const { salaryPaid: sp } = getPaidBreakdown(salary);
+      const salaryRemaining = Number(salary.salaryAmount) - sp;
+
       setExtraName(salary.extraName ?? "");
       setExtraAmount(salary.extraAmount ? String(salary.extraAmount) : "");
       setForm((f) => ({
         ...f,
         amount: "",
+        paymentFor: salaryRemaining > 0 ? "SALARY" : "EXTRA",
+        financialAccountId: "",
         paymentReference: "",
         note: "",
       }));
@@ -399,16 +425,12 @@ function PaymentDialog({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, salary?._id]);
 
-  const baseSalary = Number(salary?.salaryAmount ?? 0);
-  const paidAmount = Number(salary?.paidAmount ?? 0);
-  const newExtra = Number(extraAmount) || 0;
-  const newTotal = baseSalary + newExtra;
-  const newDue = Math.max(newTotal - paidAmount, 0);
-
   const extraChanged =
     newExtra !== Number(salary?.extraAmount ?? 0) ||
     (newExtra > 0 && extraName.trim() !== (salary?.extraName ?? ""));
 
+  const hasAmountInput = Number(form.amount) > 0;
+  const nothingToDo = !extraChanged && !hasAmountInput;
   const isPending = mutation.isPending || updateMutation.isPending;
 
   const submit = async (event: React.FormEvent) => {
@@ -419,7 +441,7 @@ function PaymentDialog({
     const hasAmount = amount > 0;
 
     if (!extraChanged && !hasAmount) {
-      toast.error("Enter a payment amount or change the extra.");
+      toast.error("Enter a payment amount to record a payment.");
       return;
     }
 
@@ -428,17 +450,22 @@ function PaymentDialog({
       return;
     }
 
-    if (newTotal < paidAmount) {
+    if (newExtra < extraPaid) {
       toast.error(
-        `Total (${money(newTotal)}) cannot be less than already paid (${money(paidAmount)}).`,
+        `Extra (${money(newExtra)}) cannot be less than already paid extra (${money(extraPaid)}).`,
       );
       return;
     }
 
     if (hasAmount) {
-      if (amount > newDue) {
+      if (form.paymentFor === "EXTRA" && newExtra <= 0) {
+        toast.error("Add an extra amount before paying extra.");
+        return;
+      }
+
+      if (amount > componentDue) {
         toast.error(
-          `Payment cannot exceed the due amount of ${money(newDue)}.`,
+          `Payment cannot exceed the ${form.paymentFor === "EXTRA" ? "extra" : "salary"} due of ${money(componentDue)}.`,
         );
         return;
       }
@@ -466,6 +493,7 @@ function PaymentDialog({
     }
 
     try {
+      // 1) extra update (age, jate due/status thik hoy)
       if (extraChanged) {
         const parsedExtra = updateTeamSalarySchema.safeParse({
           extraName: newExtra > 0 ? extraName.trim() : undefined,
@@ -507,8 +535,6 @@ function PaymentDialog({
     }
   };
 
-  const hasAmountInput = Number(form.amount) > 0;
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto">
@@ -525,15 +551,22 @@ function PaymentDialog({
           {/* Live summary */}
           <div className="grid gap-1.5 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Base salary</span>
-              <span>{money(baseSalary)}</span>
+              <span className="text-muted-foreground">
+                Base salary (paid {money(salaryPaid)})
+              </span>
+              <span>
+                {money(baseSalary)} · Due {money(salaryDue)}
+              </span>
             </div>
             {newExtra > 0 && (
               <div className="flex justify-between">
                 <span className="text-muted-foreground">
-                  Extra{extraName.trim() ? ` (${extraName.trim()})` : ""}
+                  Extra{extraName.trim() ? ` (${extraName.trim()})` : ""} (paid{" "}
+                  {money(extraPaid)})
                 </span>
-                <span className="text-indigo-500">+ {money(newExtra)}</span>
+                <span className="text-indigo-500">
+                  {money(newExtra)} · Due {money(extraDue)}
+                </span>
               </div>
             )}
             <div className="flex justify-between border-t pt-1.5 font-semibold">
@@ -550,85 +583,6 @@ function PaymentDialog({
             </div>
           </div>
 
-          <label className="grid gap-2 text-sm font-medium">
-            Pay from account
-            <Select
-              value={form.financialAccountId}
-              onValueChange={(value) =>
-                setForm({ ...form, financialAccountId: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue
-                  placeholder={
-                    accountsQuery.isLoading ? "Loading..." : "Select account"
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {accounts.map((account) => (
-                  <SelectItem key={account._id} value={account._id}>
-                    {account.accountName} ({money(account.currentBalance)})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </label>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="grid gap-2 text-sm font-medium">
-              Amount
-              <Input
-                type="number"
-                min="1"
-                max={newDue}
-                value={form.amount}
-                onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                placeholder="Leave empty to save extra only"
-              />
-            </label>
-            <label className="grid gap-2 text-sm font-medium">
-              Payment method
-              <Select
-                value={form.paymentMethod}
-                onValueChange={(value) =>
-                  setForm({ ...form, paymentMethod: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {TEAM_SALARY_PAYMENT_METHOD_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </label>
-          </div>
-          <label className="grid gap-2 text-sm font-medium">
-            Payment date
-            <Input
-              type="date"
-              value={form.paymentDate}
-              onChange={(e) =>
-                setForm({ ...form, paymentDate: e.target.value })
-              }
-              required
-            />
-          </label>
-          <label className="grid gap-2 text-sm font-medium">
-            Reference
-            <Input
-              value={form.paymentReference}
-              onChange={(e) =>
-                setForm({ ...form, paymentReference: e.target.value })
-              }
-              placeholder="Transaction reference"
-            />
-          </label>
           {/* Extra */}
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-medium">
@@ -652,6 +606,134 @@ function PaymentDialog({
             </label>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {/* Pay for */}
+            <label className="grid gap-2 text-sm font-medium">
+              Pay for
+              <Select
+                value={form.paymentFor}
+                onValueChange={(value) =>
+                  setForm({
+                    ...form,
+                    paymentFor: value as "SALARY" | "EXTRA",
+                    financialAccountId: "",
+                    amount: "",
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="SALARY">
+                    Base Salary (Due {money(salaryDue)})
+                  </SelectItem>
+                  <SelectItem value="EXTRA" disabled={newExtra <= 0}>
+                    {extraName.trim() || "Extra"} (Due {money(extraDue)})
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </label>
+
+            {/* Account */}
+            <label className="grid gap-2 text-sm font-medium">
+              Pay from account
+              <Select
+                value={form.financialAccountId}
+                onValueChange={(value) =>
+                  setForm({ ...form, financialAccountId: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={
+                      accountsQuery.isLoading ? "Loading..." : "Select account"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {accounts.map((account) => (
+                    <SelectItem key={account._id} value={account._id}>
+                      {account.accountName} ({money(account.currentBalance)})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </label>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="grid gap-2 text-sm font-medium">
+              <span className="flex items-center justify-between">
+                Amount
+                {componentDue > 0 && (
+                  <button
+                    type="button"
+                    className="text-xs text-indigo-500 hover:underline"
+                    onClick={() =>
+                      setForm({ ...form, amount: String(componentDue) })
+                    }
+                  >
+                    Pay full {money(componentDue)}
+                  </button>
+                )}
+              </span>
+              <Input
+                type="number"
+                min="1"
+                max={componentDue}
+                value={form.amount}
+                onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                placeholder={
+                  extraChanged
+                    ? "Leave empty to save extra only"
+                    : `Max ${money(componentDue)}`
+                }
+              />
+            </label>
+            <label className="grid gap-2 text-sm font-medium">
+              Payment method
+              <Select
+                value={form.paymentMethod}
+                onValueChange={(value) =>
+                  setForm({ ...form, paymentMethod: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TEAM_SALARY_PAYMENT_METHOD_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </label>
+          </div>
+
+          <label className="grid gap-2 text-sm font-medium">
+            Payment date
+            <Input
+              type="date"
+              value={form.paymentDate}
+              onChange={(e) =>
+                setForm({ ...form, paymentDate: e.target.value })
+              }
+              required
+            />
+          </label>
+          <label className="grid gap-2 text-sm font-medium">
+            Reference
+            <Input
+              value={form.paymentReference}
+              onChange={(e) =>
+                setForm({ ...form, paymentReference: e.target.value })
+              }
+              placeholder="Transaction reference"
+            />
+          </label>
           <label className="grid gap-2 text-sm font-medium">
             Note
             <Textarea
@@ -660,6 +742,7 @@ function PaymentDialog({
               placeholder="Optional note"
             />
           </label>
+
           <DialogFooter>
             <Button
               type="button"
@@ -670,14 +753,16 @@ function PaymentDialog({
             </Button>
             <Button
               type="submit"
-              disabled={isPending}
+              disabled={isPending || nothingToDo}
               className="cursor-pointer text-white bg-indigo-600 transition hover:scale-[1.02] hover:bg-indigo-500"
             >
               {isPending
                 ? "Saving..."
                 : hasAmountInput
                   ? "Record Payment"
-                  : "Save Extra"}
+                  : extraChanged
+                    ? "Save Extra"
+                    : "Enter amount"}
             </Button>
           </DialogFooter>
         </form>
@@ -1139,7 +1224,7 @@ export function TeamSalaryPageClient() {
                                 setSelected(salary);
                                 setPaymentOpen(true);
                               }}
-                              disabled={!canRecordSalaryPayment(salary)}
+                              // disabled={!canRecordSalaryPayment(salary)}
                               aria-label="Add payment / edit extra"
                             >
                               <CircleDollarSign />
