@@ -121,30 +121,31 @@ export interface ISalaryPayment {
   paymentReference?: string;
   note?: string;
   recordedBy?:
-    | Pick<User, "firstName" | "lastName" | "email" | "designation">
-    | string;
+  | Pick<User, "firstName" | "lastName" | "email" | "designation">
+  | string;
   createdAt?: string;
+  paymentFor?: "SALARY" | "EXTRA";
 }
 
 export interface ITeamSalary {
   _id: string;
 
   user:
-    | Pick<
-        User,
-        | "_id"
-        | "firstName"
-        | "lastName"
-        | "email"
-        | "phone"
-        | "role"
-        | "designation"
-        | "department"
-        | "salary"
-        | "paymentMethod"
-        | "avatar"
-      >
-    | string;
+  | Pick<
+    User,
+    | "_id"
+    | "firstName"
+    | "lastName"
+    | "email"
+    | "phone"
+    | "role"
+    | "designation"
+    | "department"
+    | "salary"
+    | "paymentMethod"
+    | "avatar"
+  >
+  | string;
 
   month: number;
   year: number;
@@ -168,8 +169,8 @@ export interface ITeamSalary {
 
   cancelledAt?: string;
   cancelledBy?:
-    | Pick<User, "firstName" | "lastName" | "email" | "designation">
-    | string;
+  | Pick<User, "firstName" | "lastName" | "email" | "designation">
+  | string;
   cancellationReason?: string;
 
   createdBy?: string | User;
@@ -215,6 +216,7 @@ export interface UpdateTeamSalaryPayload {
 
 export interface CreateSalaryPaymentPayload {
   amount: number;
+  paymentFor?: "SALARY" | "EXTRA";
   financialAccountId: string;
   paymentMethod: string;
   paymentDate: string;
@@ -230,3 +232,16 @@ export interface CancelTeamSalaryPayload {
 export const getSalaryTotal = (
   salary: Pick<ITeamSalary, "salaryAmount" | "extraAmount" | "totalAmount">,
 ) => salary.totalAmount ?? salary.salaryAmount + (salary.extraAmount ?? 0);
+
+/** Paid amount component-wise (old payment = SALARY) */
+export const getPaidBreakdown = (salary: Pick<ITeamSalary, "payments">) => {
+  let salaryPaid = 0;
+  let extraPaid = 0;
+
+  for (const payment of salary.payments ?? []) {
+    if (payment.paymentFor === "EXTRA") extraPaid += Number(payment.amount);
+    else salaryPaid += Number(payment.amount);
+  }
+
+  return { salaryPaid, extraPaid };
+};
