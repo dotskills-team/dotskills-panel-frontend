@@ -28,6 +28,7 @@ export type PageAccess =
   | "settings"
   | "documentation"
   | "api-keys"
+  | "my-assigned-projects"
   | "integrations"
   | "automation"
   | "billing"
@@ -107,6 +108,12 @@ export const availablePages: Page[] = [
     label: "API Keys",
     icon: <Lock className="h-4 w-4" />,
     description: "Manage API keys",
+  },
+   {
+    id: "my-assigned-projects",
+    label: "My Assigned Projects",
+    icon: <FileText className="h-4 w-4" />,
+    description: "View your assigned projects",
   },
   {
     id: "integrations",
@@ -249,6 +256,7 @@ export const defaultRolePermissions: Record<UserRole, PageAccess[]> = {
   DEVELOPER: [
     "dashboard",
     "api-keys",
+    "my-assigned-projects",
     "documentation",
     "integrations",
     "automation",

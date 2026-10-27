@@ -199,3 +199,70 @@ export interface ProjectFilters {
   endDate?: string;
   paymentStatus?: PaymentStatus;
 }
+
+// Project shape returned to developers (no budget/payment data)
+export interface IDeveloperProject {
+    _id: string;
+    name: string;
+    description?: string;
+    type: string;
+    status: string;
+    priority?: number;
+    startDate: string;
+    endDate?: string;
+    technologies: string[];
+    liveUrl?: string;
+    developmentLiveUrl?: string;
+    repositoryUrl?: string;
+    client?: { _id: string; firstName: string; lastName?: string };
+    projectManager?: {
+        _id: string;
+        firstName: string;
+        lastName?: string;
+        email?: string;
+    };
+    developers: {
+        _id: string;
+        firstName: string;
+        lastName?: string;
+        email?: string;
+    }[];
+}
+
+export interface IDeveloperProjectStats {
+    total: number;
+    Planning: number;
+    InProgress: number;
+    OnHold: number;
+    Completed: number;
+    DoneDue: number;
+    Delivered: number;
+    clients: { _id: string; firstName: string; lastName?: string }[];
+}
+
+export interface IDeveloperProjectMeta {
+    page: number;
+    limit: number;
+    total: number;
+    totalPage: number;
+}
+
+export interface MyProjectFilters {
+    page?: number;
+    limit?: number;
+    sort?: string;
+    searchTerm?: string;
+    client?: string;
+    status?: string;
+    type?: string;
+    startDate?: string;
+    endDate?: string;
+}
+
+export interface IDeveloperProjectsResponse {
+    success: boolean;
+    message: string;
+    data: IDeveloperProject[];
+    meta?: IDeveloperProjectMeta;
+    stats?: IDeveloperProjectStats;
+}
