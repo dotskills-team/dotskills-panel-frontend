@@ -13,6 +13,7 @@ const routeTitleMap: Record<string, string> = {
   "/dashboard/analytics": "Analytics",
   "/dashboard/settings": "Settings",
   "/dashboard/api-keys": "API Keys",
+  "/dashboard/my-assigned-projects": "My Assigned Projects",
   "/dashboard/integrations": "Integrations",
   "/dashboard/documentation": "Documentation",
   "/dashboard/automation": "Automation",

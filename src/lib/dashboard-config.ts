@@ -110,6 +110,7 @@ const NAV_ICON = {
 
   // Developer / Content
   apiKeys: { icon: "KeyRound", iconColor: COLOR.amber },
+  myAssignedProjects: { icon: "Package", iconColor: COLOR.blue },
   documentation: { icon: "BookOpen", iconColor: COLOR.sky },
   content: { icon: "PenSquare", iconColor: COLOR.violet },
 } as const;
@@ -353,18 +354,24 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
           href: "/dashboard",
           ...NAV_ICON.dashboard,
         },
-        {
-          id: "api-keys",
-          label: "API Keys",
-          href: "/dashboard/api-keys",
-          ...NAV_ICON.apiKeys,
+        // {
+        //   id: "api-keys",
+        //   label: "API Keys",
+        //   href: "/dashboard/api-keys",
+        //   ...NAV_ICON.apiKeys,
+        // },
+         {
+          id: "my-assigned-projects",
+          label: "My Assigned Projects",
+          href: "/dashboard/my-assigned-projects",
+          ...NAV_ICON.myAssignedProjects,
         },
-        {
-          id: "documentation",
-          label: "Documentation",
-          href: "/dashboard/documentation",
-          ...NAV_ICON.documentation,
-        },
+        // {
+        //   id: "documentation",
+        //   label: "Documentation",
+        //   href: "/dashboard/documentation",
+        //   ...NAV_ICON.documentation,
+        // },
       ],
     },
   ],
