@@ -8,6 +8,7 @@ import {
   Zap,
   BookOpen,
   Shield,
+  DollarSign,
 } from "lucide-react";
 
 export type Permission = string;
@@ -29,6 +30,7 @@ export type PageAccess =
   | "documentation"
   | "api-keys"
   | "my-assigned-projects"
+  | "my-salaries"
   | "integrations"
   | "automation"
   | "billing"
@@ -114,6 +116,12 @@ export const availablePages: Page[] = [
     label: "My Assigned Projects",
     icon: <FileText className="h-4 w-4" />,
     description: "View your assigned projects",
+  },
+  {
+    id: "my-salaries",
+    label: "My Salaries",
+    icon: <DollarSign className="h-4 w-4" />,
+    description: "View your salary information",
   },
   {
     id: "integrations",
@@ -252,11 +260,13 @@ export const defaultRolePermissions: Record<UserRole, PageAccess[]> = {
     "settings",
     "orders-management",
     "customer-management",
+    "my-salaries",
   ],
   DEVELOPER: [
     "dashboard",
     "api-keys",
     "my-assigned-projects",
+    "my-salaries",
     "documentation",
     "integrations",
     "automation",
@@ -267,6 +277,7 @@ export const defaultRolePermissions: Record<UserRole, PageAccess[]> = {
     "analytics",
     "blogs",
     "customer-management",
+    "my-salaries"
   ],
   STAFF: ["dashboard", "orders-management", "my-orders", "my-customers"],
 };

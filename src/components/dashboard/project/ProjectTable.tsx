@@ -31,6 +31,7 @@ import type { IProject } from "@/types/project.types";
 import { getProjectsTableColumns } from "./ProjectTableColumn";
 import { ProjectsTableError, ProjectsTableSkeleton } from "./ProjectTableSkeleton";
 import { ProjectsEmptyState } from "./ProjectEmplyStats";
+import { ProjectPermissions } from "@/features/project/utils/project.permission";
 
 interface ProjectsTableProps {
   projects: IProject[];
@@ -48,6 +49,8 @@ interface ProjectsTableProps {
   onOpenDetails: (project: IProject) => void;
   onEdit: (project: IProject) => void;
   onDelete: (project: IProject) => void;
+  permissions: ProjectPermissions;
+
 }
 
 const SORTABLE_COLUMNS = new Set(["name", "status", "startDate"]);
@@ -64,6 +67,7 @@ export function ProjectsTable({
   errorMessage,
   hasActiveFilters,
   sort,
+  permissions,
   onSortChange,
   onClearFilters,
   onAddProject,
@@ -76,9 +80,14 @@ export function ProjectsTable({
 }: ProjectsTableProps) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
+  // const columns = useMemo(
+  //   () => getProjectsTableColumns({ onOpenDetails, onEdit, onDelete }),
+  //   [onOpenDetails, onEdit, onDelete],
+  // );
+
   const columns = useMemo(
-    () => getProjectsTableColumns({ onOpenDetails, onEdit, onDelete }),
-    [onOpenDetails, onEdit, onDelete],
+    () => getProjectsTableColumns({ onOpenDetails, onEdit, onDelete, permissions }),
+    [onOpenDetails, onEdit, onDelete, permissions],
   );
 
   const table = useReactTable({
@@ -173,8 +182,8 @@ export function ProjectsTable({
                   {headerGroup.headers.map((header) => (
                     <TableHead key={header.id} style={{ width: header.getSize() }}>
                       {header.isPlaceholder ? null : SORTABLE_COLUMNS.has(
-                          header.column.id,
-                        ) ? (
+                        header.column.id,
+                      ) ? (
                         <button
                           type="button"
                           className={cn("flex items-center gap-1 text-xs font-medium uppercase")}

@@ -1,4 +1,4 @@
-import api from "@/lib/axios";
+import api, { apiClient } from "@/lib/axios";
 
 import type {
   CancelTeamSalaryInput,
@@ -10,7 +10,9 @@ import type {
 import type { UpdateTeamSalaryInput } from "../schemas/team-salary.schema";
 
 import type {
+  IMySalariesResponse,
   ITeamSalary,
+  MySalaryFilters,
   TeamSalarySummary,
 } from "@/types/team-salary.types";
 
@@ -192,3 +194,13 @@ export async function updateTeamSalary(
     body: JSON.stringify(payload),
   });
 }
+
+export const salaryApi = {
+    /**
+     * Salary records of the logged-in employee
+     */
+    getMySalaries: (params?: MySalaryFilters) =>
+        apiClient.get<IMySalariesResponse>(
+            `${BASE_URL}/my-salaries${buildQueryString(params as Record<string, unknown>)}`,
+        ),
+};

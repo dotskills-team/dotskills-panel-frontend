@@ -111,6 +111,7 @@ const NAV_ICON = {
   // Developer / Content
   apiKeys: { icon: "KeyRound", iconColor: COLOR.amber },
   myAssignedProjects: { icon: "Package", iconColor: COLOR.blue },
+  mySalaries: { icon: "Payment", iconColor: COLOR.emerald },
   documentation: { icon: "BookOpen", iconColor: COLOR.sky },
   content: { icon: "PenSquare", iconColor: COLOR.violet },
 } as const;
@@ -328,17 +329,30 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
           description: "Manage salary of team members",
           ...NAV_ICON.teamSalary,
         },
-        {
-          id: "orders-management",
-          label: "Orders",
-          href: "/dashboard/orders-management",
-          ...NAV_ICON.orders,
-        },
+        
         {
           id: "clients-management",
           label: "Clients",
           href: "/dashboard/clients",
           ...NAV_ICON.clients,
+        },
+        {
+          id: "project-management",
+          label: "Projects",
+          href: "/dashboard/project",
+          ...NAV_ICON.projects,
+        },
+        
+      ],
+    },
+     {
+      label: "My Account",
+      items: [
+        {
+          id: "my-salaries",
+          label: "My Salaries",
+          href: "/dashboard/my-salaries",
+          ...NAV_ICON.payments,
         },
       ],
     },
@@ -365,6 +379,12 @@ export const navigationConfig: Record<UserRole, NavGroup[]> = {
           label: "My Assigned Projects",
           href: "/dashboard/my-assigned-projects",
           ...NAV_ICON.myAssignedProjects,
+        },
+          {
+          id: "my-salaries",
+          label: "My Salaries",
+          href: "/dashboard/my-salaries",
+          ...NAV_ICON.payments,
         },
         // {
         //   id: "documentation",
