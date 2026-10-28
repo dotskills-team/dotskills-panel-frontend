@@ -1,107 +1,3 @@
-// import type { User } from "./user.types";
-
-// export enum SalaryPaymentStatus {
-//   PENDING = "PENDING",
-//   PARTIAL = "PARTIAL",
-//   PAID = "PAID",
-//   CANCELLED = "CANCELLED",
-// }
-
-// export interface ISalaryPayment {
-//   _id?: string;
-//   amount: number;
-//   paymentMethod: string;
-//   paymentDate: string;
-//   paymentReference?: string;
-//   note?: string;
-//   recordedBy?:
-//     | Pick<User, "firstName" | "lastName" | "email" | "designation">
-//     | string;
-//   createdAt?: string;
-// }
-
-// export interface ITeamSalary {
-//   _id: string;
-
-//   user:
-//     | Pick<
-//         User,
-//         | "_id"
-//         | "firstName"
-//         | "lastName"
-//         | "email"
-//         | "phone"
-//         | "role"
-//         | "designation"
-//         | "department"
-//         | "salary"
-//         | "paymentMethod"
-//         | "avatar"
-//       >
-//     | string;
-
-//   month: number;
-//   year: number;
-
-//   salaryAmount: number;
-//   paidAmount: number;
-//   dueAmount: number;
-
-//   status: SalaryPaymentStatus;
-
-//   payments: ISalaryPayment[];
-
-//   note?: string;
-
-//   cancelledAt?: string;
-//   cancelledBy?:
-//     | Pick<User, "firstName" | "lastName" | "email" | "designation">
-//     | string;
-//   cancellationReason?: string;
-
-//   createdBy?: string | User;
-//   updatedBy?: string | User;
-
-//   createdAt: string;
-//   updatedAt: string;
-// }
-
-// export interface TeamSalarySummary {
-//   totalSalary: number;
-//   totalPaid: number;
-//   totalDue: number;
-//   totalRecords: number;
-//   pendingCount: number;
-//   partialCount: number;
-//   paidCount: number;
-//   cancelledCount: number;
-// }
-
-// export interface GenerateMonthlySalaryPayload {
-//   month: number;
-//   year: number;
-//   note?: string;
-// }
-
-// export interface CreateTeamSalaryPayload {
-//   user: string;
-//   month: number;
-//   year: number;
-//   note?: string;
-// }
-
-// export interface CreateSalaryPaymentPayload {
-//   amount: number;
-//   paymentMethod: string;
-//   paymentDate: string;
-//   paymentReference?: string;
-//   note?: string;
-// }
-
-// export interface CancelTeamSalaryPayload {
-//   reason: string;
-// }
-
 
 import type { User } from "./user.types";
 
@@ -245,3 +141,71 @@ export const getPaidBreakdown = (salary: Pick<ITeamSalary, "payments">) => {
 
   return { salaryPaid, extraPaid };
 };
+
+
+export interface IMySalaryPayment {
+    _id: string;
+    amount: number;
+    paymentFor?: "SALARY" | "EXTRA";
+    paymentMethod: string;
+    paymentDate: string;
+    paymentReference?: string;
+    note?: string;
+}
+
+export interface IMySalary {
+    _id: string;
+    month: number;
+    year: number;
+    salaryAmount: number;
+    extraName?: string;
+    extraAmount: number;
+    totalAmount: number;
+    paidAmount: number;
+    dueAmount: number;
+    status: string;
+    payments: IMySalaryPayment[];
+    note?: string;
+    cancelledAt?: string;
+    cancellationReason?: string;
+    createdAt?: string;
+}
+
+export interface IMySalaryStats {
+    total: number;
+    totalSalary: number;
+    totalPaid: number;
+    totalDue: number;
+    Pending: number;
+    Partial: number;
+    Paid: number;
+    Cancelled: number;
+    years: number[];
+    paymentMethods: string[];
+}
+
+export interface IMySalaryMeta {
+    page: number;
+    limit: number;
+    total: number;
+    totalPage: number;
+}
+
+export interface MySalaryFilters {
+    page?: number;
+    limit?: number;
+    sort?: string;
+    searchTerm?: string;
+    month?: string;
+    year?: string;
+    status?: string;
+    paymentMethod?: string;
+}
+
+export interface IMySalariesResponse {
+    success: boolean;
+    message: string;
+    data: IMySalary[];
+    meta?: IMySalaryMeta;
+    stats?: IMySalaryStats;
+}

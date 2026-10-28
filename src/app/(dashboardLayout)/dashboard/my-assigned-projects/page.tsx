@@ -6,6 +6,5 @@ export const metadata = {
 };
 
 export default function MyAssignedProjectsPage() {
-  // return <h3>My Assigned Projects</h3>;
   return <MyAssignedProjects />;
 }

@@ -10,14 +10,14 @@ import {
     ChevronLeft,
     ChevronRight,
     Clock,
-    ExternalLink,
     FolderKanban,
-    GitBranch,
+    Gitlab,
+    Globe,
     ListChecks,
-    MoreHorizontal,
     PackageCheck,
     PauseCircle,
     RefreshCw,
+    Rocket,
     Search,
     SlidersHorizontal,
     Wallet,
@@ -36,7 +36,6 @@ import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
@@ -57,6 +56,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import projectApi from "./api/project.api";
+import { ProjectDetailsDialog } from "@/components/dashboard/project/ProjectDetailsDialog";
 
 /* -------------------------------------------------------------------------- */
 /* Constants & helpers                                                        */
@@ -179,6 +179,10 @@ const MyAssignedProjects = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Details dialog
+    const [selectedProject, setSelectedProject] =
+        useState<IDeveloperProject | null>(null);
+
     // Filters
     const [search, setSearch] = useState("");
     const [clientFilter, setClientFilter] = useState(ALL);
@@ -296,7 +300,8 @@ const MyAssignedProjects = () => {
     const totalPages = Math.max(1, meta?.totalPage ?? 1);
     const currentPage = meta?.page ?? page;
     const startIdx = (currentPage - 1) * limit;
-    const colSpan = 2 + COLUMNS.filter((c) => visible[c.key]).length + 1;
+    // priority + project + visible columns
+    const colSpan = 2 + COLUMNS.filter((c) => visible[c.key]).length;
     const isInitialLoad = isLoading && !stats;
 
     /* --------------------------------- Render -------------------------------- */
@@ -518,9 +523,6 @@ const MyAssignedProjects = () => {
                                         Delivery Date
                                     </TableHead>
                                 )}
-                                <TableHead className="text-xs font-semibold uppercase text-white">
-                                    Actions
-                                </TableHead>
                             </TableRow>
                         </TableHeader>
 
@@ -569,13 +571,17 @@ const MyAssignedProjects = () => {
                                 !isInitialLoad &&
                                 projects.map((p) => {
                                     const links = [
-                                        { label: "Live site", href: p.liveUrl, icon: ExternalLink },
-                                        { label: "Dev site", href: p.developmentLiveUrl, icon: ExternalLink },
-                                        { label: "Repository", href: p.repositoryUrl, icon: GitBranch },
+                                        { label: "Live", href: p.liveUrl, icon: Rocket },
+                                        { label: "Dev", href: p.developmentLiveUrl, icon: Globe },
+                                        { label: "Repo", href: p.repositoryUrl, icon: Gitlab },
                                     ].filter((l) => !!l.href);
 
                                     return (
-                                        <TableRow key={p._id}>
+                                        <TableRow
+                                            key={p._id}
+                                            className="cursor-pointer"
+                                            onClick={() => setSelectedProject(p)}
+                                        >
                                             <TableCell>
                                                 {p.priority !== undefined && p.priority !== null ? (
                                                     <Badge variant="outline">P{p.priority}</Badge>
@@ -584,7 +590,8 @@ const MyAssignedProjects = () => {
                                                 )}
                                             </TableCell>
 
-                                            <TableCell className="max-w-65">
+                                            {/* Project name + URLs */}
+                                            <TableCell className="max-w-72">
                                                 <p className="truncate text-sm font-medium">
                                                     {p.name}
                                                 </p>
@@ -592,6 +599,23 @@ const MyAssignedProjects = () => {
                                                     <p className="truncate text-xs text-muted-foreground">
                                                         {p.description}
                                                     </p>
+                                                )}
+                                                {links.length > 0 && (
+                                                    <div className="mt-1.5 flex flex-wrap gap-1.5">
+                                                        {links.map(({ label, href, icon: Icon }) => (
+                                                            <a
+                                                                key={label}
+                                                                href={href}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                                className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[11px] text-muted-foreground transition-colors hover:border-indigo-400 hover:text-indigo-400"
+                                                            >
+                                                                <Icon className="h-3 w-3" />
+                                                                {label}
+                                                            </a>
+                                                        ))}
+                                                    </div>
                                                 )}
                                             </TableCell>
 
@@ -651,39 +675,6 @@ const MyAssignedProjects = () => {
                                                     {formatDate(p.endDate)}
                                                 </TableCell>
                                             )}
-
-                                            <TableCell>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8"
-                                                        >
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        {links.length === 0 && (
-                                                            <DropdownMenuItem disabled>
-                                                                No links available
-                                                            </DropdownMenuItem>
-                                                        )}
-                                                        {links.map(({ label, href, icon: Icon }) => (
-                                                            <DropdownMenuItem key={label} asChild>
-                                                                <a
-                                                                    href={href}
-                                                                    target="_blank"
-                                                                    rel="noreferrer"
-                                                                >
-                                                                    <Icon className="mr-2 h-4 w-4" />
-                                                                    {label}
-                                                                </a>
-                                                            </DropdownMenuItem>
-                                                        ))}
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
                                         </TableRow>
                                     );
                                 })}
@@ -748,6 +739,16 @@ const MyAssignedProjects = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Single details dialog */}
+            <ProjectDetailsDialog
+                project={selectedProject}
+                open={!!selectedProject}
+                onOpenChange={(isOpen) => {
+                    if (!isOpen) setSelectedProject(null);
+                }}
+                role="DEVELOPER"
+            />
         </div>
     );
 };
