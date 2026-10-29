@@ -391,12 +391,22 @@ export function ProjectsPageClient() {
         )}
       </div>
 
+      {/* {(permissions.canCreate || permissions.canEdit) && (
+        <ProjectFormDialog
+          mode={formMode}
+          project={editProject ?? undefined}
+          open={formOpen}
+          onOpenChange={setFormOpen}
+        />
+      )} */}
+
       {(permissions.canCreate || permissions.canEdit) && (
         <ProjectFormDialog
           mode={formMode}
           project={editProject ?? undefined}
           open={formOpen}
           onOpenChange={setFormOpen}
+          canViewFinancials={permissions.canViewFinancials}
         />
       )}
 
@@ -414,9 +424,8 @@ export function ProjectsPageClient() {
             open={deleteOpen}
             onOpenChange={setDeleteOpen}
             title="Move project to trash?"
-            description={`This will soft-delete ${
-              deleteTarget ? deleteTarget.name : "this project"
-            }. You can restore it later from the trash.`}
+            description={`This will soft-delete ${deleteTarget ? deleteTarget.name : "this project"
+              }. You can restore it later from the trash.`}
             confirmText="Move to Trash"
             variant="destructive"
             isLoading={trashProject.isPending}
